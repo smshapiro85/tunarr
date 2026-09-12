@@ -2856,7 +2856,7 @@ export type PostApiTasksByIdRunData = {
         id: string;
     };
     query?: {
-        background?: boolean | string;
+        background?: boolean | 'true' | 'false' | number;
     };
     url: '/api/tasks/{id}/run';
 };
@@ -3002,6 +3002,7 @@ export type GetChannelsResponses = {
                 ip: string;
                 userAgent?: string;
                 lastHeartbeat?: number;
+                lastHeartbeatStr?: string;
             }>;
         }>;
         subtitlesEnabled: boolean;
@@ -3207,6 +3208,7 @@ export type CreateChannelV2Responses = {
                 ip: string;
                 userAgent?: string;
                 lastHeartbeat?: number;
+                lastHeartbeatStr?: string;
             }>;
         }>;
         subtitlesEnabled: boolean;
@@ -3366,6 +3368,7 @@ export type GetChannelsByNumberV2Responses = {
                 ip: string;
                 userAgent?: string;
                 lastHeartbeat?: number;
+                lastHeartbeatStr?: string;
             }>;
         }>;
         subtitlesEnabled: boolean;
@@ -3571,6 +3574,7 @@ export type PutApiChannelsByIdResponses = {
                 ip: string;
                 userAgent?: string;
                 lastHeartbeat?: number;
+                lastHeartbeatStr?: string;
             }>;
         }>;
         subtitlesEnabled: boolean;
@@ -3591,9 +3595,9 @@ export type GetApiChannelsByIdProgramsData = {
     path: {
         id: string;
     };
-    query?: {
-        limit?: number;
-        offset?: number;
+    query: {
+        limit: number;
+        offset: number;
         type?: 'movie' | 'episode' | 'track' | 'music_video' | 'other_video';
     };
     url: '/api/channels/{id}/programs';
@@ -3625,9 +3629,9 @@ export type GetApiChannelsByIdShowsData = {
     path: {
         id: string;
     };
-    query?: {
-        limit?: number;
-        offset?: number;
+    query: {
+        limit: number;
+        offset: number;
     };
     url: '/api/channels/{id}/shows';
 };
@@ -3651,9 +3655,9 @@ export type GetApiChannelsByIdArtistsData = {
     path: {
         id: string;
     };
-    query?: {
-        limit?: number;
-        offset?: number;
+    query: {
+        limit: number;
+        offset: number;
     };
     url: '/api/channels/{id}/artists';
 };
@@ -5440,7 +5444,7 @@ export type GetChannelFallbacksData = {
     query?: {
         from?: string;
         to?: string;
-        includePrograms?: boolean;
+        includePrograms?: boolean | 'true' | 'false' | number;
     };
     url: '/api/channels/{id}/fallbacks';
 };
@@ -5478,7 +5482,7 @@ export type GetApiChannelsAllLineupsData = {
     query?: {
         from?: string;
         to?: string;
-        includePrograms?: boolean;
+        includePrograms?: boolean | 'true' | 'false' | number;
     };
     url: '/api/channels/all/lineups';
 };
@@ -5579,7 +5583,7 @@ export type GetApiChannelsByIdLineupData = {
     query?: {
         from?: string;
         to?: string;
-        includePrograms?: boolean;
+        includePrograms?: boolean | 'true' | 'false' | number;
     };
     url: '/api/channels/{id}/lineup';
 };
@@ -6717,6 +6721,7 @@ export type GetApiChannelsByIdScheduleResponses = {
                             ip: string;
                             userAgent?: string;
                             lastHeartbeat?: number;
+                            lastHeartbeatStr?: string;
                         }>;
                     }>;
                     subtitlesEnabled: boolean;
@@ -7106,6 +7111,7 @@ export type GetApiChannelsByIdScheduleResponses = {
                             ip: string;
                             userAgent?: string;
                             lastHeartbeat?: number;
+                            lastHeartbeatStr?: string;
                         }>;
                     }>;
                     subtitlesEnabled: boolean;
@@ -8248,9 +8254,9 @@ export type GetApiProgramsByIdChildrenData = {
     path: {
         id: string;
     };
-    query?: {
-        limit?: number;
-        offset?: number;
+    query: {
+        limit: number;
+        offset: number;
         channelId?: string;
     };
     url: '/api/programs/{id}/children';
@@ -8299,7 +8305,7 @@ export type GetApiProgramsByIdExternalLinkData = {
         id: string;
     };
     query?: {
-        forward?: boolean;
+        forward?: boolean | 'true' | 'false' | number;
     };
     url: '/api/programs/{id}/external-link';
 };
@@ -10423,6 +10429,13 @@ export type GetApiSystemSettingsResponses = {
                 snapshotIntervalHours: number;
             };
         };
+        streaming: {
+            maxConcurrentSessions: number;
+            sessionStalenessMs: number;
+            sessionCleanupDelaySeconds: number;
+            initialSegmentCount: number;
+            hlsSegmentSeconds: number;
+        };
         dataDirectory: string;
         searchServerAddress: string;
     };
@@ -10484,6 +10497,13 @@ export type PutApiSystemSettingsData = {
                 maxIndexingMemory?: number;
                 snapshotIntervalHours?: number;
             };
+        };
+        streaming?: {
+            maxConcurrentSessions?: number;
+            sessionStalenessMs?: number;
+            sessionCleanupDelaySeconds?: number;
+            initialSegmentCount?: number;
+            hlsSegmentSeconds?: number;
         };
     };
     path?: never;
@@ -10550,6 +10570,13 @@ export type PutApiSystemSettingsResponses = {
                 maxIndexingMemory?: number;
                 snapshotIntervalHours: number;
             };
+        };
+        streaming: {
+            maxConcurrentSessions: number;
+            sessionStalenessMs: number;
+            sessionCleanupDelaySeconds: number;
+            initialSegmentCount: number;
+            hlsSegmentSeconds: number;
         };
         dataDirectory: string;
         searchServerAddress: string;
@@ -11755,6 +11782,23 @@ export type JellyfinLoginData = {
     url: '/api/jellyfin/login';
 };
 
+export type JellyfinLoginErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        reason: 'blocked-address';
+    };
+    /**
+     * Default Response
+     */
+    502: {
+        reason: 'unreachable' | 'auth' | 'timeout' | 'bad_response' | 'unknown';
+    };
+};
+
+export type JellyfinLoginError = JellyfinLoginErrors[keyof JellyfinLoginErrors];
+
 export type JellyfinLoginResponses = {
     /**
      * Default Response
@@ -12417,6 +12461,23 @@ export type PostApiEmbyLoginData = {
     query?: never;
     url: '/api/emby/login';
 };
+
+export type PostApiEmbyLoginErrors = {
+    /**
+     * Default Response
+     */
+    400: {
+        reason: 'blocked-address';
+    };
+    /**
+     * Default Response
+     */
+    502: {
+        reason: 'unreachable' | 'auth' | 'timeout' | 'bad_response' | 'unknown';
+    };
+};
+
+export type PostApiEmbyLoginError = PostApiEmbyLoginErrors[keyof PostApiEmbyLoginErrors];
 
 export type PostApiEmbyLoginResponses = {
     /**
@@ -13105,6 +13166,7 @@ export type PostApiTroubleshootResponses = {
                     ip: string;
                     userAgent?: string;
                     lastHeartbeat?: number;
+                    lastHeartbeatStr?: string;
                 }>;
             }>;
             subtitlesEnabled: boolean;

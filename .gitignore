@@ -51,3 +51,6 @@ web/.tanstack
 
 .claude/worktrees
 .pnpm-store/
+
+# Local dev: symlink to the built web bundle so the source server can serve /web
+server/src/web

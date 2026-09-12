@@ -226,11 +226,12 @@ export class SessionManager {
       'hls_slower',
       (channel) =>
         this.hlsSlowerSessionFactory(channel, {
-          initialSegmentCount: 2, // 8 seconds of content
+          initialSegmentCount: this.streamingTuning().initialSegmentCount,
+          cleanupDelayMs:
+            this.streamingTuning().sessionCleanupDelaySeconds * 1000,
           transcodeDirectory:
             this.settingsDB.ffmpegSettings().transcodeDirectory,
-          stalenessMs:
-            getNumericEnvVar(TUNARR_ENV_VARS.SESSION_STALENESS_MS) ?? undefined,
+          stalenessMs: this.sessionStalenessMs(),
           ...options,
         }),
     );
@@ -249,15 +250,90 @@ export class SessionManager {
       options?.streamMode ?? 'hls',
       (channel) =>
         this.hlsSessionFactory(channel, {
-          initialSegmentCount: 2, // 8 seconds of content
+          initialSegmentCount: this.streamingTuning().initialSegmentCount,
+          cleanupDelayMs:
+            this.streamingTuning().sessionCleanupDelaySeconds * 1000,
           transcodeDirectory:
             this.settingsDB.ffmpegSettings().transcodeDirectory,
           streamMode: options?.streamMode ?? 'hls',
-          stalenessMs:
-            getNumericEnvVar(TUNARR_ENV_VARS.SESSION_STALENESS_MS) ?? undefined,
+          stalenessMs: this.sessionStalenessMs(),
           ...options,
         }),
     );
+  }
+
+  private streamingTuning() {
+    return this.settingsDB.systemSettings().streaming;
+  }
+
+  /**
+   * Env var still wins so an operator can override without touching settings;
+   * otherwise the configured value is used.
+   */
+  private sessionStalenessMs() {
+    return (
+      getNumericEnvVar(TUNARR_ENV_VARS.SESSION_STALENESS_MS) ??
+      this.streamingTuning().sessionStalenessMs
+    );
+  }
+
+  /**
+   * Cap the number of transcodes running at once.
+   *
+   * Channel surfing otherwise leaves one ffmpeg per channel visited, each alive
+   * for the full staleness window. Those pile up and contend for VideoToolbox
+   * and NAS reads, so every subsequent tune gets slower -- measured here as 2s
+   * with one session and 9s with eight.
+   *
+   * Evicts least-recently-active first, preferring sessions nothing is watching
+   * any more. Idle sessions are only a warm cache, so dropping one costs a
+   * re-tune; sessions with live viewers are evicted only if nothing else can
+   * be. The channel being requested is never a candidate.
+   */
+  private async enforceConcurrencyLimit(exceptChannelId: string) {
+    const limit = this.streamingTuning().maxConcurrentSessions;
+    if (limit <= 0) {
+      return;
+    }
+
+    const active = filter(
+      values(this.#sessions),
+      (session) => !session.stopped && session.keyObj.id !== exceptChannelId,
+    );
+
+    // +1 because the caller is about to add one.
+    let overBy = active.length + 1 - limit;
+    if (overBy <= 0) {
+      return;
+    }
+
+    const ranked = [...active].sort((a, b) => {
+      const aIdle = a.numConnections() === 0;
+      const bIdle = b.numConnections() === 0;
+      if (aIdle !== bIdle) {
+        return aIdle ? -1 : 1;
+      }
+      return (a.lastActivity() ?? 0) - (b.lastActivity() ?? 0);
+    });
+
+    for (const session of ranked) {
+      if (overBy <= 0) {
+        break;
+      }
+      this.logger.info(
+        'Concurrent transcode limit (%d) reached; evicting session for channel %s (viewers=%d)',
+        limit,
+        session.keyObj.id,
+        session.numConnections(),
+      );
+      try {
+        await session.stop();
+      } catch (e) {
+        this.logger.error(e, 'Error evicting session to free a transcode slot');
+      }
+      this.deleteSession(session.keyObj.id, session.sessionType);
+      overBy--;
+    }
   }
 
   private async getOrCreateSession<TSession extends Session>(
@@ -281,6 +357,8 @@ export class SessionManager {
           if (!channel?.transcodeConfig) {
             throw new ChannelNotFoundError(channelId);
           }
+
+          await this.enforceConcurrencyLimit(channelId);
 
           session = sessionFactory(channel);
 

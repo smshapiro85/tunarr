@@ -147,6 +147,20 @@ export class FfmpegState {
     return;
   }
 
+  /**
+   * Segment duration the session asked for. Drives -hls_time and the GOP so
+   * keyframes land on segment boundaries; upstream read a hardcoded static.
+   */
+  get hlsSegmentSeconds(): Maybe<number> {
+    if (
+      this.outputFormat.type === OutputFormatTypes.Hls ||
+      this.outputFormat.type === OutputFormatTypes.HlsDirectV2
+    ) {
+      return this.outputFormat.hlsOptions.hlsTime;
+    }
+    return;
+  }
+
   get hlsBaseStreamUrl() {
     if (
       this.outputFormat.type === OutputFormatTypes.Hls ||

@@ -8,7 +8,7 @@ import type { StreamConnectionDetails } from '@tunarr/types/api';
 import type { ChannelConcatStreamMode } from '@tunarr/types/schemas';
 import { Mutex } from 'async-mutex';
 import dayjs from 'dayjs';
-import { forEach, isEmpty, isNull, keys, partition } from 'lodash-es';
+import { forEach, isEmpty, isNull, keys, map, max, partition } from 'lodash-es';
 import events from 'node:events';
 import type { StrictExtract } from 'ts-essentials';
 import { v4 } from 'uuid';
@@ -250,6 +250,19 @@ export abstract class Session<
 
   lastHeartbeat(token: string) {
     return this.connectionTracker.lastHeartbeat(token);
+  }
+
+  /**
+   * Most recent heartbeat across every connection, or null when nothing is
+   * watching. SessionManager orders eviction candidates by this when the
+   * concurrent-transcode limit is reached.
+   */
+  lastActivity(): number | null {
+    const tokens = keys(this.connections());
+    if (isEmpty(tokens)) {
+      return null;
+    }
+    return max(map(tokens, (token) => this.lastHeartbeat(token) ?? 0)) ?? null;
   }
 
   scheduleCleanup(delay?: number) {
