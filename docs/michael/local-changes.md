@@ -103,6 +103,32 @@ Episode titles routinely contain `:` and `'`, which drawtext parses as an option
 separator and a quote. Rather than escape them, the filter substitutes: a
 typographic apostrophe renders identically and `:` becomes a dash.
 
+## Channel logos over a non-LAN address
+
+Channel icons are stored as absolute URLs captured when the icon was uploaded —
+in practice a LAN address, because that is how the browser reached the server.
+The M3U and XMLTV outputs substitute `{{host}}` with the requesting host, so
+stream URLs and programme icons follow whatever address a client arrived on, but
+the stored channel icon URL was emitted verbatim.
+
+The result: a client reaching Tunarr by any other route (Tailscale, a reverse
+proxy, a hostname) plays streams fine but every channel logo silently fails to
+load. On this deployment the phone IPTV app over Tailscale showed no logos while
+the Apple TV on the LAN was unaffected.
+
+`resolveHostTemplatedIconUrl()` rewrites a locally-uploaded icon to
+`{{host}}/images/uploads/<file>` so host substitution applies. Externally hosted
+icons are left alone.
+
+!!! warning "Use it only where `{{host}}` is substituted"
+    M3UService and XmlTvWriter run their output through host substitution, so
+    they use the templated helper. `TvGuideService` emits real URLs for the web
+    guide and must keep using plain `resolveIconUrl`, or the literal `{{host}}`
+    would leak into the response.
+
+No data migration is needed — the rewrite happens at render time, so existing
+icons and any future upload are both covered.
+
 ## Segment duration plumbing
 
 Upstream read segment duration from a module-level static,

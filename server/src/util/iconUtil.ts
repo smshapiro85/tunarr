@@ -44,6 +44,35 @@ export function resolveIconUrl(
 }
 
 /**
+ * Like {@link resolveIconUrl}, but rewrites locally-uploaded icons to the
+ * `{{host}}` template so the caller's host substitution applies.
+ *
+ * Channel icons are stored as absolute URLs captured when the icon was
+ * uploaded -- typically a LAN address, because that is how the browser reached
+ * the server. The M3U and XMLTV outputs are consumed by clients that may reach
+ * Tunarr by a completely different address (over Tailscale, a reverse proxy, or
+ * a hostname), and a baked-in LAN URL is unreachable for them: streams play but
+ * every channel logo silently fails to load.
+ *
+ * Only use this from outputs that run the result through `{{host}}`
+ * substitution. Callers that emit a real URL (the web guide, for example) must
+ * keep using {@link resolveIconUrl}, or the literal template would leak into
+ * the response.
+ */
+export function resolveHostTemplatedIconUrl(
+  icon: ChannelIcon | null | undefined,
+  defaultUrl: string,
+): string | null {
+  const resolved = resolveIconUrl(icon, defaultUrl);
+  if (!isNonEmptyString(resolved)) {
+    return resolved;
+  }
+
+  const filename = extractLocalUploadFilename(resolved);
+  return filename ? `{{host}}${LocalUploadPathPrefix}${filename}` : resolved;
+}
+
+/**
  * Deletes the old icon file from disk if it was a local upload and the icon
  * has been cleared (newIconPath is empty). No-ops otherwise.
  * Throws if the file exists but cannot be deleted.

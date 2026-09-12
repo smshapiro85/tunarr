@@ -3,7 +3,7 @@ import { KEYS } from '@/types/inject.js';
 import { getChannelId } from '@/util/channels.js';
 import { devAssert } from '@/util/debug.js';
 import { attempt, isDefined } from '@/util/index.js';
-import { resolveIconUrl } from '@/util/iconUtil.js';
+import { resolveHostTemplatedIconUrl } from '@/util/iconUtil.js';
 import { LoggerFactory } from '@/util/logging/LoggerFactory.js';
 import { Mutex } from 'async-mutex';
 import { inject, injectable } from 'inversify';
@@ -59,7 +59,7 @@ export class M3uService {
         continue;
       }
       const channelId = getChannelId(channel.number);
-      const logoUrl = resolveIconUrl(channel.icon, '{{host}}/images/tunarr.png');
+      const logoUrl = resolveHostTemplatedIconUrl(channel.icon, '{{host}}/images/tunarr.png');
       const logoAttr =
         logoUrl != null ? ` tvg-logo="${logoUrl}"` : '';
       data += `#EXTINF:-1 tvg-id="${channelId}" channel-id="${channelId}" CUID="${channelId}" tvg-chno="${channel.number}" tvg-name="${channel.name}"${logoAttr} group-title="${channel.groupTitle}",${channel.name}\n`;

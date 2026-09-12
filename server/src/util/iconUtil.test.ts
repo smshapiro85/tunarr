@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import {
   deleteIfLocalAndCleared,
   extractLocalUploadFilename,
+  resolveHostTemplatedIconUrl,
   resolveIconUrl,
 } from './iconUtil.ts';
 import * as fsUtil from './fsUtil.ts';
@@ -46,6 +47,51 @@ describe('iconUtil', () => {
           'http://192.168.1.10:8000/images/uploads/channel_icon.jpg',
         ),
       ).toBe('channel_icon.jpg');
+    });
+  });
+
+  describe('resolveHostTemplatedIconUrl', () => {
+    const defaultUrl = '{{host}}/images/tunarr.png';
+
+    it('rewrites a locally-uploaded icon to the host template', () => {
+      // Icons are stored with whatever address the uploading browser used,
+      // which is unreachable for a client arriving by another route.
+      const icon = {
+        path: 'http://192.168.1.62:8000/images/uploads/abc_icon.png',
+        width: 0,
+        duration: 0,
+        position: 'bottom-right' as const,
+      };
+      expect(resolveHostTemplatedIconUrl(icon, defaultUrl)).toBe(
+        '{{host}}/images/uploads/abc_icon.png',
+      );
+    });
+
+    it('leaves a genuinely external icon URL alone', () => {
+      const icon = {
+        path: 'https://example.com/logo.png',
+        width: 0,
+        duration: 0,
+        position: 'bottom-right' as const,
+      };
+      expect(resolveHostTemplatedIconUrl(icon, defaultUrl)).toBe(
+        'https://example.com/logo.png',
+      );
+    });
+
+    it('passes the default through untouched', () => {
+      expect(resolveHostTemplatedIconUrl(null, defaultUrl)).toBe(defaultUrl);
+    });
+
+    it('preserves the no-icon case', () => {
+      const icon = {
+        path: '',
+        useDefaultIconFallback: false,
+        width: 0,
+        duration: 0,
+        position: 'bottom-right' as const,
+      };
+      expect(resolveHostTemplatedIconUrl(icon, defaultUrl)).toBeNull();
     });
   });
 
