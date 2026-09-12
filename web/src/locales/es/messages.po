@@ -744,6 +744,10 @@ msgstr ""
 msgid "Break Positioning"
 msgstr ""
 
+#: src/pages/settings/MichaelSettingsPage.tsx:202
+msgid "Briefly shows \"Season 3 - Episode 8\" and the episode title in the lower-right corner, then fades out. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program. Episodes only — movies and music are skipped."
+msgstr ""
+
 #: src/components/settings/ffmpeg/TranscodeConfigAudioSettingsForm.tsx:142
 msgid "Buffer size cannot be changed when copying input audio"
 msgstr ""
@@ -885,7 +889,7 @@ msgstr ""
 msgid "Channel Stream Mode"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:88
+#: src/pages/settings/MichaelSettingsPage.tsx:99
 msgid "Channel surfing leaves one ffmpeg per channel visited, and they compete for the hardware encoder. When this limit is hit, the least-recently-watched channel is stopped. 0 disables the limit."
 msgstr ""
 
@@ -1619,6 +1623,10 @@ msgstr ""
 msgid "EPG (Hours)"
 msgstr ""
 
+#: src/pages/settings/MichaelSettingsPage.tsx:186
+msgid "Episode Overlay"
+msgstr ""
+
 #: src/components/programs/Episodes.tsx:49
 #: src/pages/library/TrashPage.tsx:126
 msgid "Episodes"
@@ -1685,7 +1693,7 @@ msgstr ""
 msgid "Error while running system fixer {fixerId}. Check server logs for details."
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:52
+#: src/pages/settings/MichaelSettingsPage.tsx:63
 msgid "Error while saving settings. Check the console for details."
 msgstr ""
 
@@ -2009,7 +2017,7 @@ msgstr ""
 msgid "Go Home"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:114
+#: src/pages/settings/MichaelSettingsPage.tsx:125
 msgid "Grace period after the last viewer leaves before the transcode is stopped. Longer keeps a re-tune instant; shorter frees a slot sooner. Upstream: 15."
 msgstr ""
 
@@ -2079,7 +2087,7 @@ msgstr ""
 msgid "How frequently libraries should be scanned (starting from midnight)."
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:101
+#: src/pages/settings/MichaelSettingsPage.tsx:112
 msgid "How long a viewer may go without asking for the playlist before it is dropped. Must stay comfortably above the segment duration, or an active viewer gets disconnected. Upstream: 120000."
 msgstr ""
 
@@ -2087,7 +2095,7 @@ msgstr ""
 msgid "How long each commercial break lasts"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:153
+#: src/pages/settings/MichaelSettingsPage.tsx:164
 msgid "How long to keep waiting before giving up and returning an error. Independent of the poll interval."
 msgstr ""
 
@@ -2095,7 +2103,7 @@ msgstr ""
 msgid "How often the XMLTV file is regenerated"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:140
+#: src/pages/settings/MichaelSettingsPage.tsx:151
 msgid "How often to check whether the stream can be served. Upstream polls once a second, which rounds every channel start up to a whole second. Upstream: 1000."
 msgstr ""
 
@@ -2263,7 +2271,7 @@ msgstr ""
 msgid "Leave blank to use the channel's icon."
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:166
+#: src/pages/settings/MichaelSettingsPage.tsx:177
 msgid "Length of each HLS segment. Shorter starts faster but makes more files and more keyframes, which costs bitrate. Upstream: 4."
 msgstr ""
 
@@ -2457,7 +2465,7 @@ msgstr ""
 msgid "Max Backups"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:87
+#: src/pages/settings/MichaelSettingsPage.tsx:98
 msgid "Max concurrent transcodes"
 msgstr ""
 
@@ -2865,6 +2873,10 @@ msgstr ""
 msgid "Overflow Behavior"
 msgstr ""
 
+#: src/pages/settings/MichaelSettingsPage.tsx:221
+msgid "Overlay duration (seconds)"
+msgstr ""
+
 #: src/components/channel_config/ChannelTranscodingConfig.tsx:203
 msgid "Override global audio and subtitle settings for this channel."
 msgstr ""
@@ -3120,11 +3132,11 @@ msgstr ""
 msgid "Read More"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:139
+#: src/pages/settings/MichaelSettingsPage.tsx:150
 msgid "Readiness poll interval (ms)"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:152
+#: src/pages/settings/MichaelSettingsPage.tsx:163
 msgid "Readiness timeout (ms)"
 msgstr ""
 
@@ -3271,7 +3283,7 @@ msgstr ""
 #: src/components/channel_config/ChannelProgrammingConfig.tsx:233
 #: src/components/custom-shows/EditCustomShowForm.tsx:435
 #: src/components/filler/EditFillerListForm.tsx:172
-#: src/pages/settings/MichaelSettingsPage.tsx:180
+#: src/pages/settings/MichaelSettingsPage.tsx:236
 msgid "Reset"
 msgstr ""
 
@@ -3394,7 +3406,7 @@ msgstr ""
 #: src/pages/settings/FeaturesSettingsPage.tsx:170
 #: src/pages/settings/FfmpegSettingsPage.tsx:428
 #: src/pages/settings/HdhrSettingsPage.tsx:152
-#: src/pages/settings/MichaelSettingsPage.tsx:187
+#: src/pages/settings/MichaelSettingsPage.tsx:243
 #: src/pages/settings/ScannerSettingsPage.tsx:82
 #: src/pages/settings/XmlTvSettingsPage.tsx:222
 msgid "Save"
@@ -3470,15 +3482,15 @@ msgstr ""
 msgid "Seasons"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:165
+#: src/pages/settings/MichaelSettingsPage.tsx:176
 msgid "Segment duration (seconds)"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:126
+#: src/pages/settings/MichaelSettingsPage.tsx:137
 msgid "Segments before playback"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:127
+#: src/pages/settings/MichaelSettingsPage.tsx:138
 msgid "Segments that must exist before the playlist is served. This is the single biggest lever on channel start time. Upstream: 2."
 msgstr ""
 
@@ -3563,7 +3575,7 @@ msgstr ""
 #: src/components/settings/general/GeneralSettingsForm.tsx:216
 #: src/pages/settings/FfmpegSettingsPage.tsx:131
 #: src/pages/settings/HdhrSettingsPage.tsx:59
-#: src/pages/settings/MichaelSettingsPage.tsx:45
+#: src/pages/settings/MichaelSettingsPage.tsx:56
 #: src/pages/settings/XmlTvSettingsPage.tsx:58
 msgid "Settings Saved!"
 msgstr ""
@@ -3582,6 +3594,10 @@ msgstr ""
 #: src/components/channel_config/ProgrammingSelector.tsx:356
 #~ msgid "Show only synced libraries"
 #~ msgstr ""
+
+#: src/pages/settings/MichaelSettingsPage.tsx:199
+msgid "Show season and episode when a channel starts"
+msgstr ""
 
 #: src/pages/guide/GuidePage.tsx:155
 msgid "Show Stealth"
@@ -3773,7 +3789,7 @@ msgstr ""
 msgid "Stream Selection"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:69
+#: src/pages/settings/MichaelSettingsPage.tsx:80
 msgid "Stream Startup & Concurrency"
 msgstr ""
 
@@ -3870,7 +3886,7 @@ msgstr ""
 msgid "Tasks"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:113
+#: src/pages/settings/MichaelSettingsPage.tsx:124
 msgid "Teardown delay (seconds)"
 msgstr ""
 
@@ -3939,7 +3955,7 @@ msgstr ""
 msgid "There was an error when submitting the form. Please see console logs for details."
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:72
+#: src/pages/settings/MichaelSettingsPage.tsx:83
 msgid "These are local additions. Upstream Tunarr hardcodes every value on this page. Changes apply to the next stream that starts — no restart needed."
 msgstr ""
 
@@ -4105,6 +4121,10 @@ msgstr ""
 
 #: src/components/channels/ChannelSummaryQuickStats.tsx:88
 msgid "Total Runtime"
+msgstr ""
+
+#: src/pages/settings/MichaelSettingsPage.tsx:222
+msgid "Total time on screen, including a 0.75s fade-out at the end."
 msgstr ""
 
 #: src/components/programs/Tracks.tsx:21
@@ -4315,7 +4335,7 @@ msgstr ""
 #~ msgid "View Library"
 #~ msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:100
+#: src/pages/settings/MichaelSettingsPage.tsx:111
 msgid "Viewer timeout (ms)"
 msgstr ""
 

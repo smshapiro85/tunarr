@@ -10443,6 +10443,8 @@ export type GetApiSystemSettingsResponses = {
             hlsSegmentSeconds: number;
             readinessPollMs: number;
             readinessTimeoutMs: number;
+            episodeOverlayEnabled: boolean;
+            episodeOverlaySeconds: number;
         };
         dataDirectory: string;
         searchServerAddress: string;
@@ -10514,6 +10516,8 @@ export type PutApiSystemSettingsData = {
             hlsSegmentSeconds?: number;
             readinessPollMs?: number;
             readinessTimeoutMs?: number;
+            episodeOverlayEnabled?: boolean;
+            episodeOverlaySeconds?: number;
         };
     };
     path?: never;
@@ -10589,6 +10593,8 @@ export type PutApiSystemSettingsResponses = {
             hlsSegmentSeconds: number;
             readinessPollMs: number;
             readinessTimeoutMs: number;
+            episodeOverlayEnabled: boolean;
+            episodeOverlaySeconds: number;
         };
         dataDirectory: string;
         searchServerAddress: string;

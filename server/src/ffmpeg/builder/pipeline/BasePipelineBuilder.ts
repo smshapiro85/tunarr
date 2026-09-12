@@ -34,6 +34,8 @@ import type { WatermarkInputSource } from '@/ffmpeg/builder/input/WatermarkInput
 import { HlsConcatOutputFormat } from '@/ffmpeg/builder/options/HlsConcatOutputFormat.js';
 import { HlsDirectOutputFormat } from '@/ffmpeg/builder/options/HlsDirectOutputFormat.js';
 import { HlsOutputFormat } from '@/ffmpeg/builder/options/HlsOutputFormat.js';
+import { EpisodeOverlayFilter } from '@/ffmpeg/builder/filter/EpisodeOverlayFilter.js';
+import { resolveOverlayFontFile } from '@/ffmpeg/builder/filter/overlayFont.js';
 import { HlsSubtitleOutputFormat } from '@/ffmpeg/builder/options/HlsSubtitleOutputFormat.js';
 import { LogLevelOption } from '@/ffmpeg/builder/options/LogLevelOption.js';
 import { NoStatsOption } from '@/ffmpeg/builder/options/NoStatsOption.js';
@@ -864,6 +866,48 @@ export abstract class BasePipelineBuilder implements PipelineBuilder {
         this.pipelineSteps.push(new StreamSeekFilter(this.ffmpegState.start));
       }
     }
+  }
+
+  /**
+   * Draws the channel-start overlay, if the session asked for one and this
+   * ffmpeg can render text. drawtext needs libfreetype, which not every build
+   * has (Homebrew's default `ffmpeg` bottle does not) -- without the capability
+   * check the whole filter graph would fail to initialize and the channel would
+   * fall back to the error screen.
+   */
+  protected setEpisodeOverlay(currentState: FrameState): FrameState {
+    const overlay = this.ffmpegState.episodeOverlay;
+    if (!overlay || overlay.lines.length === 0) {
+      return currentState;
+    }
+
+    if (!this.ffmpegCapabilities.hasFilter('drawtext')) {
+      this.logger.warn(
+        'Episode overlay is enabled but this ffmpeg build has no drawtext filter (needs libfreetype). Skipping the overlay.',
+      );
+      return currentState;
+    }
+
+    const fontFile = resolveOverlayFontFile();
+    if (isNull(fontFile)) {
+      this.logger.warn(
+        'Episode overlay is enabled but no usable font file was found. Skipping the overlay.',
+      );
+      return currentState;
+    }
+
+    const filter = new EpisodeOverlayFilter(
+      currentState.scaledSize,
+      overlay.lines,
+      overlay.holdSeconds,
+      fontFile,
+    );
+
+    if (filter.filter.length > 0) {
+      this.videoInputSource.addFilter(filter);
+    }
+
+    return currentState;
   }
 
   protected setRealtime() {

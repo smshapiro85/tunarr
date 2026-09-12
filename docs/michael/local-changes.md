@@ -20,6 +20,8 @@ reachable only through an environment variable.
 | `hlsSegmentSeconds` | 4 (hardcoded) | 1 | HLS segment duration. |
 | `readinessPollMs` | 1000 (hardcoded) | 100 | How often to check whether the stream can be served. |
 | `readinessTimeoutMs` | 15,000 (implied) | 15,000 | Total wait before failing the request. |
+| `episodeOverlayEnabled` | *did not exist* | true | Show season/episode briefly when a channel starts. |
+| `episodeOverlaySeconds` | *did not exist* | 5 | How long it stays up, fade included. |
 
 Changes apply to the next stream that starts. No restart required.
 
@@ -51,6 +53,46 @@ when every slot is actively watched.
 Verified: surfing six channels with the cap at 3 held at exactly 3 sessions with
 eviction logged each time, and load times stayed flat at 1.0–2.0 s instead of
 climbing.
+
+## Episode overlay
+
+Shows two right-aligned lines in the lower-right corner when a channel starts,
+then fades out:
+
+```
+Season 5 - Episode 2
+The Puffy Shirt
+```
+
+Rendered as one `drawtext` per line. drawtext has no right-align mode, but each
+filter resolves `tw` against its own string, so `x=w-tw-margin` aligns the lines
+independently. The fade is an alpha ramp over the final 0.75s rather than
+`enable=`, which would pop the text off in a single frame. Verified against a
+live stream: text present through t≈4s, and the corner is pixel-identical to a
+clean plate from t≈6s.
+
+Gated on `isFirstTranscode`, so it appears when a viewer tunes in and not again
+each time the session rolls to the next program. A session spawns a fresh ffmpeg
+per program *and* mid-episode when the transcode buffer runs low, so anything
+ungated would flash the overlay back up mid-show.
+
+Only episodes qualify — the overlay is skipped when `seasonNumber` or `episode`
+is absent, which covers movies and music.
+
+!!! warning "Requires an ffmpeg with libfreetype"
+    `drawtext` needs libfreetype, and **Homebrew's default `ffmpeg` bottle does
+    not have it** — check with `ffmpeg -filters | grep drawtext`. This
+    deployment uses `ffmpeg-full` (keg-only, installs alongside without
+    shadowing the default). The pipeline checks `hasFilter('drawtext')` and logs
+    a warning rather than failing, since an unavailable filter would otherwise
+    break the whole graph and drop the channel to the error screen.
+
+Font resolution walks a candidate list covering macOS, Debian and Alpine, and is
+cached — it runs on the latency-sensitive stream start path.
+
+Episode titles routinely contain `:` and `'`, which drawtext parses as an option
+separator and a quote. Rather than escape them, the filter substitutes: a
+typographic apostrophe renders identically and `:` becomes a dash.
 
 ## Segment duration plumbing
 

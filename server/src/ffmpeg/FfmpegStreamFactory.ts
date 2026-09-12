@@ -26,10 +26,13 @@ import { ChannelStreamModes } from '@tunarr/types';
 import dayjs from 'dayjs';
 import type { Duration } from 'dayjs/plugin/duration.js';
 import { injectable } from 'inversify';
-import { isUndefined } from 'lodash-es';
+import { isUndefined, isNil} from 'lodash-es';
 import type { DeepReadonly } from 'ts-essentials';
 import { match, P } from 'ts-pattern';
-import type { ContentBackedStreamLineupItem } from '../db/derived_types/StreamLineup.ts';
+import type {
+  ContentBackedStreamLineupItem,
+  StreamLineupItem,
+} from '../db/derived_types/StreamLineup.ts';
 import type { IChannelDB } from '../db/interfaces/IChannelDB.ts';
 import { FeatureFlagService } from '../services/FeatureFlagService.ts';
 import { isImageBasedSubtitle } from '../stream/util.ts';
@@ -296,6 +299,40 @@ export class FfmpegStreamFactory {
     );
   }
 
+  /**
+   * Text for the channel-start overlay, or undefined when it should not show.
+   *
+   * Gated on `isFirstTranscode` so it appears when a viewer tunes in and not
+   * again each time the session rolls to the next program -- a session spawns
+   * a fresh ffmpeg per program, and mid-episode when the transcode buffer runs
+   * low, so anything ungated would flash the overlay back up mid-show.
+   */
+  private buildEpisodeOverlay(
+    lineupItem: StreamLineupItem,
+    isFirstTranscode: boolean,
+  ): Maybe<{ lines: string[]; holdSeconds: number }> {
+    const streaming = this.settingsDB.systemSettings().streaming;
+    if (!isFirstTranscode || !streaming?.episodeOverlayEnabled) {
+      return undefined;
+    }
+
+    if (lineupItem.type !== 'program') {
+      return undefined;
+    }
+
+    const { seasonNumber, episode, title } = lineupItem.program;
+    if (isNil(seasonNumber) || isNil(episode)) {
+      return undefined;
+    }
+
+    const lines = [`Season ${seasonNumber} - Episode ${episode}`];
+    if (isNonEmptyString(title)) {
+      lines.push(title);
+    }
+
+    return { lines, holdSeconds: streaming.episodeOverlaySeconds };
+  }
+
   async createStreamSession({
     // TODO Fix these dumb params
     stream: { source: streamSource, details: streamDetails },
@@ -422,6 +459,10 @@ export class FfmpegStreamFactory {
         duration,
         ptsOffset,
         isFirstTranscode,
+        episodeOverlay: this.buildEpisodeOverlay(
+          lineupItem,
+          isFirstTranscode ?? false,
+        ),
         emitEndList: emitEndList ?? false,
         threadCount: isPassthrough ? 0 : this.transcodeConfig.threadCount,
         copyAllStreams: isPassthrough,

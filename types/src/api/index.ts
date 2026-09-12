@@ -306,6 +306,8 @@ export const UpdateSystemSettingsRequestSchema = z.object({
       hlsSegmentSeconds: z.number().int().min(1).max(10).optional(),
       readinessPollMs: z.number().int().min(25).max(5_000).optional(),
       readinessTimeoutMs: z.number().int().min(1_000).max(120_000).optional(),
+      episodeOverlayEnabled: z.boolean().optional(),
+      episodeOverlaySeconds: z.number().min(1).max(60).optional(),
     })
     .optional(),
 });

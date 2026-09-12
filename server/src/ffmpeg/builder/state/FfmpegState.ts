@@ -94,6 +94,12 @@ export class FfmpegState {
    */
   isFirstTranscode?: boolean;
   /**
+   * Lines to show briefly in the lower-right corner when a channel starts.
+   * Set only for the first transcode of a session, so it does not reappear
+   * when the session rolls to the next program.
+   */
+  episodeOverlay?: { lines: string[]; holdSeconds: number };
+  /**
    * When true, FFmpeg will write `#EXT-X-ENDLIST` to the HLS playlist on exit.
    * Used for finite streams (e.g. troubleshooter) so hls.js stops polling.
    */

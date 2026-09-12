@@ -1,10 +1,21 @@
-import { NumericFormControllerText } from '@/components/util/TypedController.tsx';
+import {
+  CheckboxFormController,
+  NumericFormControllerText,
+} from '@/components/util/TypedController.tsx';
 import {
   useSystemSettings,
   useUpdateSystemSettings,
 } from '@/hooks/useSystemSettings.ts';
 import { Trans, useLingui } from '@lingui/react/macro';
-import { Alert, Box, Divider, Typography } from '@mui/material';
+import {
+  Alert,
+  Box,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormHelperText,
+  Typography,
+} from '@mui/material';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
@@ -164,6 +175,51 @@ export default function MichaelSettingsPage() {
               fullWidth: true,
               label: t`Segment duration (seconds)`,
               helperText: t`Length of each HLS segment. Shorter starts faster but makes more files and more keyframes, which costs bitrate. Upstream: 4.`,
+            }}
+          />
+        </Grid>
+      </Grid>
+
+      <Divider sx={{ my: 3 }} />
+
+      <Typography variant="h6" sx={{ mb: 1 }}>
+        <Trans>Episode Overlay</Trans>
+      </Typography>
+
+      <Grid container spacing={2} columns={{ xs: 1, sm: 2 }}>
+        <Grid size={1}>
+          <FormControl fullWidth>
+            <FormControlLabel
+              control={
+                <CheckboxFormController
+                  control={control}
+                  name="episodeOverlayEnabled"
+                />
+              }
+              label={t`Show season and episode when a channel starts`}
+            />
+            <FormHelperText>
+              <Trans>
+                Briefly shows "Season 3 - Episode 8" and the episode title in
+                the lower-right corner, then fades out. Only on the first tune
+                of a session, so it does not reappear when the channel rolls to
+                the next program. Episodes only &mdash; movies and music are
+                skipped.
+              </Trans>
+            </FormHelperText>
+          </FormControl>
+        </Grid>
+
+        <Grid size={1}>
+          <NumericFormControllerText
+            control={control}
+            name="episodeOverlaySeconds"
+            float
+            rules={{ min: 1, max: 60 }}
+            TextFieldProps={{
+              fullWidth: true,
+              label: t`Overlay duration (seconds)`,
+              helperText: t`Total time on screen, including a 0.75s fade-out at the end.`,
             }}
           />
         </Grid>

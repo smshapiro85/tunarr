@@ -95,6 +95,13 @@ export const StreamingTuningSettingsSchema = z.object({
   readinessPollMs: z.number().int().min(25).max(5_000).default(100),
   /** Total time to wait for readiness before failing the request. */
   readinessTimeoutMs: z.number().int().min(1_000).max(120_000).default(15_000),
+  /**
+   * Briefly show "Season N - Episode N" and the episode title in the
+   * lower-right corner when a channel starts, then fade out.
+   */
+  episodeOverlayEnabled: z.boolean().default(true),
+  /** How long the overlay stays up, including its fade-out. */
+  episodeOverlaySeconds: z.number().min(1).max(60).default(5),
 });
 
 export type StreamingTuningSettings = z.infer<
@@ -109,6 +116,8 @@ export const DefaultStreamingTuningSettings = {
   hlsSegmentSeconds: 1,
   readinessPollMs: 100,
   readinessTimeoutMs: 15_000,
+  episodeOverlayEnabled: true,
+  episodeOverlaySeconds: 5,
 } satisfies StreamingTuningSettings;
 
 export const SystemSettingsSchema = z.object({
