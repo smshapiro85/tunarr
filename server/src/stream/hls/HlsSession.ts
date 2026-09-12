@@ -1,3 +1,4 @@
+import { DefaultStreamingTuningSettings } from '@tunarr/types';
 import type { ISettingsDB } from '@/db/interfaces/ISettingsDB.js';
 import type { ChannelOrmWithTranscodeConfig } from '@/db/schema/derivedTypes.js';
 import type { FfmpegTranscodeSession } from '@/ffmpeg/FfmpegTrancodeSession.js';
@@ -331,7 +332,9 @@ export class HlsSession extends BaseHlsSession<HlsSessionOptions> {
       streamBaseUrl: `/stream/channels/${this.channel.uuid}/${this.sessionType}/`,
       // Drives both -hls_time (via FfmpegState.hlsSegmentSeconds) and the
       // playlist's EXT-X-TARGETDURATION, so the two cannot drift apart.
-      hlsTime: this.settingsDB.systemSettings().streaming.hlsSegmentSeconds,
+      hlsTime:
+        this.settingsDB.systemSettings().streaming?.hlsSegmentSeconds ??
+        DefaultStreamingTuningSettings.hlsSegmentSeconds,
       hlsListSize: 0,
       deleteThreshold: null,
       appendSegments: true,

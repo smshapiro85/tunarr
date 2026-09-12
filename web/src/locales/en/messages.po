@@ -885,6 +885,10 @@ msgstr "Channel settings saved!"
 msgid "Channel Stream Mode"
 msgstr "Channel Stream Mode"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:88
+msgid "Channel surfing leaves one ffmpeg per channel visited, and they compete for the hardware encoder. When this limit is hit, the least-recently-watched channel is stopped. 0 disables the limit."
+msgstr "Channel surfing leaves one ffmpeg per channel visited, and they compete for the hardware encoder. When this limit is hit, the least-recently-watched channel is stopped. 0 disables the limit."
+
 #: src/components/channel_config/ChannelTranscodingConfig.tsx:170
 #: src/components/channel_config/ChannelTranscodingConfig.tsx:175
 msgid "Channel Transcode Config"
@@ -1681,6 +1685,10 @@ msgstr "Error while copying to clipboard. Check browser logs for details"
 msgid "Error while running system fixer {fixerId}. Check server logs for details."
 msgstr "Error while running system fixer {fixerId}. Check server logs for details."
 
+#: src/pages/settings/MichaelSettingsPage.tsx:52
+msgid "Error while saving settings. Check the console for details."
+msgstr "Error while saving settings. Check the console for details."
+
 #: src/components/settings/general/GeneralSettingsForm.tsx:223
 msgid "Error while saving settings. Please check console for details."
 msgstr "Error while saving settings. Please check console for details."
@@ -1707,7 +1715,7 @@ msgstr "Escape Hatches"
 msgid "Every"
 msgstr "Every"
 
-#: src/components/slot_scheduler/ShowSearchSlotProgrammingForm.tsx:123
+#: src/components/slot_scheduler/ShowSearchSlotProgrammingForm.tsx:126
 msgid "Exclude Seasons"
 msgstr "Exclude Seasons"
 
@@ -2001,6 +2009,10 @@ msgstr "Global Options"
 msgid "Go Home"
 msgstr "Go Home"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:114
+msgid "Grace period after the last viewer leaves before the transcode is stopped. Longer keeps a re-tune instant; shorter frees a slot sooner. Upstream: 15."
+msgstr "Grace period after the last viewer leaves before the transcode is stopped. Longer keeps a re-tune instant; shorter frees a slot sooner. Upstream: 15."
+
 #: src/components/base/ProgramViewToggleButton.tsx:34
 msgid "Grid"
 msgstr "Grid"
@@ -2067,6 +2079,10 @@ msgstr "HLS not supported in this browser!"
 msgid "How frequently libraries should be scanned (starting from midnight)."
 msgstr "How frequently libraries should be scanned (starting from midnight)."
 
+#: src/pages/settings/MichaelSettingsPage.tsx:101
+msgid "How long a viewer may go without asking for the playlist before it is dropped. Must stay comfortably above the segment duration, or an active viewer gets disconnected. Upstream: 120000."
+msgstr "How long a viewer may go without asking for the playlist before it is dropped. Must stay comfortably above the segment duration, or an active viewer gets disconnected. Upstream: 120000."
+
 #: src/components/slot_scheduler/MidRollConfigPanel.tsx:351
 msgid "How long each commercial break lasts"
 msgstr "How long each commercial break lasts"
@@ -2132,7 +2148,7 @@ msgstr "Image"
 msgid "Image URL"
 msgstr "Image URL"
 
-#: src/components/slot_scheduler/ShowSearchSlotProgrammingForm.tsx:95
+#: src/components/slot_scheduler/ShowSearchSlotProgrammingForm.tsx:98
 msgid "Include Seasons"
 msgstr "Include Seasons"
 
@@ -2238,6 +2254,10 @@ msgstr "Lazy"
 #: src/components/channel_config/ChannelTranscodingConfig.tsx:353
 msgid "Leave blank to use the channel's icon."
 msgstr "Leave blank to use the channel's icon."
+
+#: src/pages/settings/MichaelSettingsPage.tsx:140
+msgid "Length of each HLS segment. Shorter starts faster but makes more files and more keyframes, which costs bitrate. Upstream: 4."
+msgstr "Length of each HLS segment. Shorter starts faster but makes more files and more keyframes, which costs bitrate. Upstream: 4."
 
 #: src/pages/welcome/WelcomePage.tsx:90
 msgid "Let's get started..."
@@ -2429,6 +2449,10 @@ msgstr "Match any of"
 msgid "Max Backups"
 msgstr "Max Backups"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:87
+msgid "Max concurrent transcodes"
+msgstr "Max concurrent transcodes"
+
 #: src/components/programming_controls/AddBreaksModal.tsx:180
 msgid "Max Duration"
 msgstr "Max Duration"
@@ -2497,6 +2521,10 @@ msgstr "Media Type"
 #: src/pages/system/SystemLogsPage.tsx:141
 msgid "Message"
 msgstr "Message"
+
+#: src/pages/settings/SettingsLayout.tsx:53
+msgid "Michael's Settings"
+msgstr "Michael's Settings"
 
 #: src/components/slot_scheduler/EditRandomSlotDialogContent.tsx:402
 #: src/components/slot_scheduler/EditTimeSlotDialogContent.tsx:324
@@ -3229,6 +3257,7 @@ msgstr "Rescan Interval (hours)"
 #: src/components/channel_config/ChannelProgrammingConfig.tsx:233
 #: src/components/custom-shows/EditCustomShowForm.tsx:435
 #: src/components/filler/EditFillerListForm.tsx:172
+#: src/pages/settings/MichaelSettingsPage.tsx:154
 msgid "Reset"
 msgstr "Reset"
 
@@ -3351,6 +3380,7 @@ msgstr "Sample rate cannot be changed when copying input audio"
 #: src/pages/settings/FeaturesSettingsPage.tsx:170
 #: src/pages/settings/FfmpegSettingsPage.tsx:428
 #: src/pages/settings/HdhrSettingsPage.tsx:152
+#: src/pages/settings/MichaelSettingsPage.tsx:161
 #: src/pages/settings/ScannerSettingsPage.tsx:82
 #: src/pages/settings/XmlTvSettingsPage.tsx:222
 msgid "Save"
@@ -3425,6 +3455,18 @@ msgstr "Search…"
 #: src/components/programs/Seasons.tsx:35
 msgid "Seasons"
 msgstr "Seasons"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:139
+msgid "Segment duration (seconds)"
+msgstr "Segment duration (seconds)"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:126
+msgid "Segments before playback"
+msgstr "Segments before playback"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:127
+msgid "Segments that must exist before the playlist is served. This is the single biggest lever on channel start time. Upstream: 2."
+msgstr "Segments that must exist before the playlist is served. This is the single biggest lever on channel start time. Upstream: 2."
 
 #: src/pages/system/TroubleshootPage.tsx:271
 msgid "Select a program and channel to test playback. The troubleshooter will analyze stream selection, build the FFmpeg pipeline, and run a short test transcode."
@@ -3507,12 +3549,13 @@ msgstr "Settings"
 #: src/components/settings/general/GeneralSettingsForm.tsx:216
 #: src/pages/settings/FfmpegSettingsPage.tsx:131
 #: src/pages/settings/HdhrSettingsPage.tsx:59
+#: src/pages/settings/MichaelSettingsPage.tsx:45
 #: src/pages/settings/XmlTvSettingsPage.tsx:58
 msgid "Settings Saved!"
 msgstr "Settings Saved!"
 
 #: src/components/programming_controls/ShuffleProgrammingModal.tsx:56
-#: src/components/slot_scheduler/ShowSearchSlotProgrammingForm.tsx:75
+#: src/components/slot_scheduler/ShowSearchSlotProgrammingForm.tsx:78
 #: src/components/slot_scheduler/SlotSchedulerCyclicShuffleDialog.tsx:229
 #: src/components/slot_scheduler/SlotSchedulerCyclicShuffleDialog.tsx:255
 msgid "Show"
@@ -3716,6 +3759,10 @@ msgstr "Stream Mode"
 msgid "Stream Selection"
 msgstr "Stream Selection"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:69
+msgid "Stream Startup & Concurrency"
+msgstr "Stream Startup & Concurrency"
+
 #: src/components/channel_config/EditChannelForm.tsx:248
 msgid "Streaming"
 msgstr "Streaming"
@@ -3809,6 +3856,10 @@ msgstr "Tail Buffer (minutes)"
 msgid "Tasks"
 msgstr "Tasks"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:113
+msgid "Teardown delay (seconds)"
+msgstr "Teardown delay (seconds)"
+
 #: src/components/settings/general/GeneralSettingsForm.tsx:456
 msgid "Temporarily caches responses from Plex based by request path. Could potentially speed up channel editing."
 msgstr "Temporarily caches responses from Plex based by request path. Could potentially speed up channel editing."
@@ -3873,6 +3924,10 @@ msgstr "There was an error submitting the request to update Media Source setting
 #: src/components/settings/media_source/LocalMediaEditDialog.tsx:167
 msgid "There was an error when submitting the form. Please see console logs for details."
 msgstr "There was an error when submitting the form. Please see console logs for details."
+
+#: src/pages/settings/MichaelSettingsPage.tsx:72
+msgid "These are local additions. Upstream Tunarr hardcodes every value on this page. Changes apply to the next stream that starts — no restart needed."
+msgstr "These are local additions. Upstream Tunarr hardcodes every value on this page. Changes apply to the next stream that starts — no restart needed."
 
 #: src/components/settings/general/WebSettings.tsx:48
 msgid "These settings are stored in your browser and are saved automatically when changed."
@@ -4245,6 +4300,10 @@ msgstr "View in {0}"
 #: src/components/MediaSourceLibraryTable.tsx:151
 #~ msgid "View Library"
 #~ msgstr "View Library"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:100
+msgid "Viewer timeout (ms)"
+msgstr "Viewer timeout (ms)"
 
 #: src/hooks/useRouteName.ts:55
 msgid "Watch"

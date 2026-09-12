@@ -6,6 +6,7 @@ import type { EventService } from '@/services/EventService.js';
 import type { OnDemandChannelService } from '@/services/OnDemandChannelService.js';
 import type { Logger } from '@/util/logging/LoggerFactory.js';
 import type { DeepRequired } from 'ts-essentials';
+import { DefaultStreamingTuningSettings } from '@tunarr/types';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { HlsSessionOptions } from './hls/HlsSession.ts';
 
@@ -124,6 +125,11 @@ function makeSessionManager(
   const settingsDB: Partial<ISettingsDB> = {
     ffmpegSettings: vi.fn().mockReturnValue({
       transcodeDirectory: '/tmp/test-sessions',
+    }),
+    // SessionManager reads the streaming tuning knobs (concurrency limit,
+    // staleness, segment counts) when creating a session.
+    systemSettings: vi.fn().mockReturnValue({
+      streaming: DefaultStreamingTuningSettings,
     }),
   };
 

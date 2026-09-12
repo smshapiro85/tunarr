@@ -37,7 +37,8 @@ import type { ChannelOrmWithTranscodeConfig } from '@/db/schema/derivedTypes.js'
 import { OnDemandChannelService } from '@/services/OnDemandChannelService.js';
 import { KEYS } from '@/types/inject.js';
 import { ifDefined } from '@/util/index.js';
-import type { ChannelStreamMode } from '@tunarr/types';
+import type { ChannelStreamMode, StreamingTuningSettings } from '@tunarr/types';
+import { DefaultStreamingTuningSettings } from '@tunarr/types';
 import type { StreamConnectionDetails } from '@tunarr/types/api';
 import type { ChannelConcatStreamMode } from '@tunarr/types/schemas';
 import dayjs from 'dayjs';
@@ -262,8 +263,17 @@ export class SessionManager {
     );
   }
 
-  private streamingTuning() {
-    return this.settingsDB.systemSettings().streaming;
+  /**
+   * A settings file written before the `streaming` section existed has no such
+   * key, and `systemSettings()` hands back what is stored rather than a
+   * schema-parsed object. Fall back to the defaults so an upgrade in place
+   * cannot throw on the session-creation path.
+   */
+  private streamingTuning(): StreamingTuningSettings {
+    return (
+      this.settingsDB.systemSettings().streaming ??
+      DefaultStreamingTuningSettings
+    );
   }
 
   /**

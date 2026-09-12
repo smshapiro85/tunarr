@@ -3034,10 +3034,10 @@ export type CreateChannelV2Data = {
             guideFlexTitle?: string;
             guideMinimumDuration: number;
             icon: {
-                path: string;
-                width: number;
-                duration: number;
-                position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+                path?: string;
+                width?: number;
+                duration?: number;
+                position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
                 useDefaultIconFallback?: boolean;
             };
             id: string;
@@ -3398,10 +3398,10 @@ export type PutApiChannelsByIdData = {
         guideFlexTitle?: string;
         guideMinimumDuration: number;
         icon: {
-            path: string;
-            width: number;
-            duration: number;
-            position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+            path?: string;
+            width?: number;
+            duration?: number;
+            position?: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
             useDefaultIconFallback?: boolean;
         };
         id: string;
@@ -4841,6 +4841,10 @@ export type PostApiChannelsByIdProgrammingErrors = {
     /**
      * Default Response
      */
+    400: string;
+    /**
+     * Default Response
+     */
     404: unknown;
     /**
      * Default Response
@@ -4851,6 +4855,8 @@ export type PostApiChannelsByIdProgrammingErrors = {
      */
     501: unknown;
 };
+
+export type PostApiChannelsByIdProgrammingError = PostApiChannelsByIdProgrammingErrors[keyof PostApiChannelsByIdProgrammingErrors];
 
 export type PostApiChannelsByIdProgrammingResponses = {
     /**
