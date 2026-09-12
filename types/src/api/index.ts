@@ -286,6 +286,26 @@ export const UpdateSystemSettingsRequestSchema = z.object({
   backup: BackupSettingsSchema.optional(),
   cache: CacheSettingsSchema.optional(),
   server: ServerSettingsSchema.optional(),
+  /**
+   * Declared field by field for the same reason as `logging` above: every
+   * field on StreamingTuningSettingsSchema carries a `.default()`, so
+   * `.partial()` would deliver those defaults for keys the client omitted and
+   * the handler could not tell "omitted" from "sent".
+   */
+  streaming: z
+    .object({
+      maxConcurrentSessions: z.number().int().min(0).max(64).optional(),
+      sessionStalenessMs: z
+        .number()
+        .int()
+        .min(1000)
+        .max(3_600_000)
+        .optional(),
+      sessionCleanupDelaySeconds: z.number().int().min(0).max(3600).optional(),
+      initialSegmentCount: z.number().int().min(1).max(10).optional(),
+      hlsSegmentSeconds: z.number().int().min(1).max(10).optional(),
+    })
+    .optional(),
 });
 
 export type UpdateSystemSettingsRequest = z.infer<

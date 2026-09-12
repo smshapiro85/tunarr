@@ -241,6 +241,12 @@ export const systemApiRouter: RouterPluginAsyncCallback = async (
           system.logging.logRollConfig = logging;
         });
 
+        // Merge field-by-field so a request that mentions only one knob does
+        // not reset the others.
+        ifDefined(req.body.streaming, (streaming) => {
+          system.streaming = { ...system.streaming, ...streaming };
+        });
+
         return file;
       });
 

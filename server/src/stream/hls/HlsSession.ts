@@ -329,7 +329,9 @@ export class HlsSession extends BaseHlsSession<HlsSessionOptions> {
       segmentBaseDirectory: dirname(this.workingDirectory),
       streamBasePath: basename(this.workingDirectory),
       streamBaseUrl: `/stream/channels/${this.channel.uuid}/${this.sessionType}/`,
-      hlsTime: 4,
+      // Drives both -hls_time (via FfmpegState.hlsSegmentSeconds) and the
+      // playlist's EXT-X-TARGETDURATION, so the two cannot drift apart.
+      hlsTime: this.settingsDB.systemSettings().streaming.hlsSegmentSeconds,
       hlsListSize: 0,
       deleteThreshold: null,
       appendSegments: true,

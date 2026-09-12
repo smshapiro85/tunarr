@@ -13,6 +13,7 @@ export class HlsOutputFormat extends OutputOption {
     private isFirstTranscode: boolean,
     private oneSecondGop: boolean,
     private emitEndList: boolean = false,
+    private segmentSeconds: number = HlsOutputFormat.SegmentSeconds,
   ) {
     super();
   }
@@ -21,18 +22,18 @@ export class HlsOutputFormat extends OutputOption {
     const frameRate = this.desiredState.frameRate ?? this.mediaFrameRate;
     const gop = this.oneSecondGop
       ? frameRate
-      : frameRate * HlsOutputFormat.SegmentSeconds;
+      : frameRate * this.segmentSeconds;
     const opts = [
       '-g',
       `${gop}`,
       '-keyint_min',
-      `${frameRate * HlsOutputFormat.SegmentSeconds}`,
+      `${frameRate * this.segmentSeconds}`,
       '-force_key_frames',
-      `expr:gte(t,n_forced*${HlsOutputFormat.SegmentSeconds})`,
+      `expr:gte(t,n_forced*${this.segmentSeconds})`,
       '-f',
       'hls',
       '-hls_time',
-      `${HlsOutputFormat.SegmentSeconds}`,
+      `${this.segmentSeconds}`,
       '-hls_list_size',
       '0',
       '-segment_list_flags',

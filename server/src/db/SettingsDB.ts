@@ -14,6 +14,7 @@ import {
   LoggingSettingsSchema,
   PlexStreamSettings,
   SystemSettings,
+  DefaultStreamingTuningSettings,
   SystemSettingsSchema,
   XmlTvSettings,
   defaultFfmpegSettings,
@@ -125,6 +126,7 @@ export const defaultSettings = (dbBasePath: string): SettingsFile => ({
       enablePlexRequestCache: false,
     },
     server: DefaultServerSettings,
+    streaming: DefaultStreamingTuningSettings,
   },
   featureFlags: FeatureFlagsSchema.parse({}),
 });

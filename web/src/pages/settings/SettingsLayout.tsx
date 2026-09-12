@@ -49,6 +49,11 @@ export function SettingsLayout({ currentTab = '/general' }: Props) {
               value="/features"
               to="/settings/features"
             />
+            <RouterTabLink
+              label={t`Michael's Settings`}
+              value="/michael"
+              to="/settings/michael"
+            />
           </Tabs>
         </Box>
 

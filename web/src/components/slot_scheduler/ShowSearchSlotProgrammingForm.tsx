@@ -31,6 +31,9 @@ export const ShowSearchSlotProgrammingForm = () => {
   const showChildrenQuery = useQuery({
     ...getApiProgramsByIdChildrenOptions({
       path: { id: show?.uuid ?? '' },
+      // Server-side defaults (all children, no offset). Sent explicitly
+      // because zod `.default()` surfaces as `required` in the OpenAPI spec.
+      query: { limit: -1, offset: 0 },
     }),
     enabled: !!show,
   });
