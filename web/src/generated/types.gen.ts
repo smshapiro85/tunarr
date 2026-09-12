@@ -10441,6 +10441,8 @@ export type GetApiSystemSettingsResponses = {
             sessionCleanupDelaySeconds: number;
             initialSegmentCount: number;
             hlsSegmentSeconds: number;
+            readinessPollMs: number;
+            readinessTimeoutMs: number;
         };
         dataDirectory: string;
         searchServerAddress: string;
@@ -10510,6 +10512,8 @@ export type PutApiSystemSettingsData = {
             sessionCleanupDelaySeconds?: number;
             initialSegmentCount?: number;
             hlsSegmentSeconds?: number;
+            readinessPollMs?: number;
+            readinessTimeoutMs?: number;
         };
     };
     path?: never;
@@ -10583,6 +10587,8 @@ export type PutApiSystemSettingsResponses = {
             sessionCleanupDelaySeconds: number;
             initialSegmentCount: number;
             hlsSegmentSeconds: number;
+            readinessPollMs: number;
+            readinessTimeoutMs: number;
         };
         dataDirectory: string;
         searchServerAddress: string;

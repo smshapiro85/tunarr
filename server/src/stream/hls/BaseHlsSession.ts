@@ -148,6 +148,8 @@ export abstract class BaseHlsSession<
   }
 
   protected override async waitForStreamReady(): Promise<Result<void>> {
+    const readinessPollMs = this.sessionOptions.readinessPollMs ?? 1_000;
+    const readinessTimeoutMs = this.sessionOptions.readinessTimeoutMs ?? 15_000;
     // Wait for the stream to become ready
     try {
       this.logger.debug('Waiting for HLS stream session to be ready...');
@@ -212,10 +214,16 @@ export abstract class BaseHlsSession<
           }
         },
         {
-          retries: 15,
+          // Poll interval and overall budget are separate knobs. A 1s tick made
+          // the response time quantize to whole seconds: a segment ready at
+          // 740ms still waited for the 1000ms poll. Deriving `retries` from the
+          // budget keeps the wall-clock ceiling fixed when the interval changes
+          // -- lowering the interval alone would shorten the ceiling and turn
+          // slow tunes into HTTP 500s.
+          retries: Math.max(1, Math.ceil(readinessTimeoutMs / readinessPollMs)),
           factor: 1,
-          minTimeout: 1000,
-          maxTimeout: 1000,
+          minTimeout: readinessPollMs,
+          maxTimeout: readinessPollMs,
           randomize: false,
         },
       );
@@ -247,4 +255,8 @@ export type BaseHlsSessionOptions = SessionOptions & {
   initialSegmentCount: number;
   // The directory to write segments to
   transcodeDirectory?: string;
+  // How often to check whether the stream is ready. Defaults to 1s.
+  readinessPollMs?: number;
+  // Total time to wait for readiness before giving up. Defaults to 15s.
+  readinessTimeoutMs?: number;
 };

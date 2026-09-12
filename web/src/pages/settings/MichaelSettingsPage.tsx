@@ -132,6 +132,32 @@ export default function MichaelSettingsPage() {
         <Grid size={1}>
           <NumericFormControllerText
             control={control}
+            name="readinessPollMs"
+            rules={{ min: 25, max: 5000 }}
+            TextFieldProps={{
+              fullWidth: true,
+              label: t`Readiness poll interval (ms)`,
+              helperText: t`How often to check whether the stream can be served. Upstream polls once a second, which rounds every channel start up to a whole second. Upstream: 1000.`,
+            }}
+          />
+        </Grid>
+
+        <Grid size={1}>
+          <NumericFormControllerText
+            control={control}
+            name="readinessTimeoutMs"
+            rules={{ min: 1000, max: 120000 }}
+            TextFieldProps={{
+              fullWidth: true,
+              label: t`Readiness timeout (ms)`,
+              helperText: t`How long to keep waiting before giving up and returning an error. Independent of the poll interval.`,
+            }}
+          />
+        </Grid>
+
+        <Grid size={1}>
+          <NumericFormControllerText
+            control={control}
             name="hlsSegmentSeconds"
             rules={{ min: 1, max: 10 }}
             TextFieldProps={{

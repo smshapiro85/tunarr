@@ -17,7 +17,9 @@ reachable only through an environment variable.
 | `sessionStalenessMs` | 120,000 (env only) | 30,000 | How long a viewer may go without requesting the playlist before being dropped. |
 | `sessionCleanupDelaySeconds` | 15 (env only) | 10 | Grace period after the last viewer leaves before teardown. |
 | `initialSegmentCount` | 2 (hardcoded) | 1 | Segments that must exist before the playlist is served. |
-| `hlsSegmentSeconds` | 4 (hardcoded) | 2 | HLS segment duration. |
+| `hlsSegmentSeconds` | 4 (hardcoded) | 1 | HLS segment duration. |
+| `readinessPollMs` | 1000 (hardcoded) | 100 | How often to check whether the stream can be served. |
+| `readinessTimeoutMs` | 15,000 (implied) | 15,000 | Total wait before failing the request. |
 
 Changes apply to the next stream that starts. No restart required.
 
@@ -76,6 +78,7 @@ value behaves exactly as before.
 | `server/src/stream/SessionManager.ts` | concurrency limit, settings-driven session options |
 | `server/src/stream/Session.ts` | `lastActivity()` accessor for eviction ordering |
 | `server/src/stream/hls/HlsSession.ts` | `hlsTime` from settings |
+| `server/src/stream/hls/BaseHlsSession.ts` | readiness poll decoupled from timeout budget |
 | `server/src/ffmpeg/builder/state/FfmpegState.ts` | `hlsSegmentSeconds` getter |
 | `server/src/ffmpeg/builder/options/HlsOutputFormat.ts` | accepts segment duration |
 | `server/src/ffmpeg/builder/pipeline/BasePipelineBuilder.ts` | passes it through |

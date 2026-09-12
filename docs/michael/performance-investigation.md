@@ -159,6 +159,73 @@ state, returning HTTP 500 until the session is dropped.
 
 The full procedure is in [Operations](operations.md#benchmarking).
 
+## Reaching sub-1-second starts
+
+A second round targeted sub-1s channel start *including* four concurrent
+streams. Two changes got there.
+
+**Segment duration to 1 second.** Time to first segment, measured directly:
+
+| `hls_time` | First segment |
+|---|---|
+| 2 | 1,197 ms |
+| 1 | 728 / 700 ms |
+
+**Decoupling the readiness poll from its timeout budget.** Upstream polls on a
+fixed 1-second tick, so a segment ready at 740 ms still waited until 1,000 ms —
+every channel start rounded up to a whole second. Instrumenting the gap
+confirmed it: the first segment file appeared at ~976 ms and the HTTP response
+came at 1,124 ms.
+
+The poll interval is now configurable (default 100 ms) with `retries` derived
+from a separate timeout budget, so shortening the interval cannot silently
+shorten the 15-second ceiling and turn slow tunes into HTTP 500s.
+
+### Concurrency stopped mattering
+
+The key result. Time to first segment at `hls_time 1`, with background
+transcodes running:
+
+| Competing transcodes | First segment |
+|---|---|
+| 0 | 762 / 735 ms |
+| 1 | 715 / 717 ms |
+| 3 (four total) | **741 / 745 ms** |
+
+Essentially flat. The earlier collapse to 9 seconds under load came from needing
+*8 seconds of media* through a contended encoder. At 1 second of media, four
+concurrent streams cost nothing measurable.
+
+### Where it landed
+
+Cold-start medians of 3 runs per channel, full reset between each:
+
+| Channel | Runs (ms) | Median |
+|---|---|---|
+| 113 (4K HEVC source) | 1260 / 626 / 1052 | 1,052 ms |
+| 116 | 1141 / 540 / 653 | 653 ms |
+| 119 | 544 / 652 / 857 | 652 ms |
+| 120 | 826 / 755 / 854 | 826 ms |
+| 100 | 726 / 746 / 537 | 726 ms |
+
+Four of five medians are sub-second, and surfing six channels against the
+4-stream cap produced 729–958 ms on five of six.
+
+Results are bimodal — the first run after a reset is consistently the slowest,
+which points at file caching rather than anything in Tunarr. A genuinely cold
+file read lands around 1.0–1.3 s; a warm one around 540–860 ms. Source
+resolution is *not* the driver: the 4K HEVC channel was among the fastest.
+
+The floor is roughly 700 ms: FFmpeg spawn, SMB open, seek, VideoToolbox init,
+one second of encoding, plus ~50–150 ms of Tunarr overhead.
+
+### Tried and rejected
+
+Bounding FFmpeg's input analysis with `-probesize` / `-analyzeduration` (which
+Tunarr never sets) looked promising and **did not help**. Against an unbounded
+default that repeated at 718 ms, bounded runs measured 707–730 ms — inside the
+noise. Not adopted.
+
 ## Client-side latency
 
 Server-side is ~1–2 s, but the Apple TV shows 3–5 s. The remainder is iPlayTV,

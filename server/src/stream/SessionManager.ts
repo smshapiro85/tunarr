@@ -230,6 +230,8 @@ export class SessionManager {
           initialSegmentCount: this.streamingTuning().initialSegmentCount,
           cleanupDelayMs:
             this.streamingTuning().sessionCleanupDelaySeconds * 1000,
+          readinessPollMs: this.streamingTuning().readinessPollMs,
+          readinessTimeoutMs: this.streamingTuning().readinessTimeoutMs,
           transcodeDirectory:
             this.settingsDB.ffmpegSettings().transcodeDirectory,
           stalenessMs: this.sessionStalenessMs(),
@@ -254,6 +256,8 @@ export class SessionManager {
           initialSegmentCount: this.streamingTuning().initialSegmentCount,
           cleanupDelayMs:
             this.streamingTuning().sessionCleanupDelaySeconds * 1000,
+          readinessPollMs: this.streamingTuning().readinessPollMs,
+          readinessTimeoutMs: this.streamingTuning().readinessTimeoutMs,
           transcodeDirectory:
             this.settingsDB.ffmpegSettings().transcodeDirectory,
           streamMode: options?.streamMode ?? 'hls',

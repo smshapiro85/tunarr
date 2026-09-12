@@ -87,7 +87,14 @@ export const StreamingTuningSettingsSchema = z.object({
   /** Segments that must exist before the playlist is served. Upstream: 2. */
   initialSegmentCount: z.number().int().min(1).max(10).default(1),
   /** HLS segment duration in seconds. Upstream: 4. */
-  hlsSegmentSeconds: z.number().int().min(1).max(10).default(2),
+  hlsSegmentSeconds: z.number().int().min(1).max(10).default(1),
+  /**
+   * How often to re-check whether the stream is ready to serve. Upstream polls
+   * on a fixed 1s tick, which quantizes response time to whole seconds.
+   */
+  readinessPollMs: z.number().int().min(25).max(5_000).default(100),
+  /** Total time to wait for readiness before failing the request. */
+  readinessTimeoutMs: z.number().int().min(1_000).max(120_000).default(15_000),
 });
 
 export type StreamingTuningSettings = z.infer<
@@ -99,7 +106,9 @@ export const DefaultStreamingTuningSettings = {
   sessionStalenessMs: 30_000,
   sessionCleanupDelaySeconds: 10,
   initialSegmentCount: 1,
-  hlsSegmentSeconds: 2,
+  hlsSegmentSeconds: 1,
+  readinessPollMs: 100,
+  readinessTimeoutMs: 15_000,
 } satisfies StreamingTuningSettings;
 
 export const SystemSettingsSchema = z.object({

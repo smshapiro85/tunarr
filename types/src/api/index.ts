@@ -304,6 +304,8 @@ export const UpdateSystemSettingsRequestSchema = z.object({
       sessionCleanupDelaySeconds: z.number().int().min(0).max(3600).optional(),
       initialSegmentCount: z.number().int().min(1).max(10).optional(),
       hlsSegmentSeconds: z.number().int().min(1).max(10).optional(),
+      readinessPollMs: z.number().int().min(25).max(5_000).optional(),
+      readinessTimeoutMs: z.number().int().min(1_000).max(120_000).optional(),
     })
     .optional(),
 });

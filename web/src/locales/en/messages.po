@@ -2087,9 +2087,17 @@ msgstr "How long a viewer may go without asking for the playlist before it is dr
 msgid "How long each commercial break lasts"
 msgstr "How long each commercial break lasts"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:153
+msgid "How long to keep waiting before giving up and returning an error. Independent of the poll interval."
+msgstr "How long to keep waiting before giving up and returning an error. Independent of the poll interval."
+
 #: src/pages/settings/XmlTvSettingsPage.tsx:141
 msgid "How often the XMLTV file is regenerated"
 msgstr "How often the XMLTV file is regenerated"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:140
+msgid "How often to check whether the stream can be served. Upstream polls once a second, which rounds every channel start up to a whole second. Upstream: 1000."
+msgstr "How often to check whether the stream can be served. Upstream polls once a second, which rounds every channel start up to a whole second. Upstream: 1000."
 
 #: src/components/slot_scheduler/MidRollConfigPanel.tsx:213
 msgid "How often to insert a break"
@@ -2255,7 +2263,7 @@ msgstr "Lazy"
 msgid "Leave blank to use the channel's icon."
 msgstr "Leave blank to use the channel's icon."
 
-#: src/pages/settings/MichaelSettingsPage.tsx:140
+#: src/pages/settings/MichaelSettingsPage.tsx:166
 msgid "Length of each HLS segment. Shorter starts faster but makes more files and more keyframes, which costs bitrate. Upstream: 4."
 msgstr "Length of each HLS segment. Shorter starts faster but makes more files and more keyframes, which costs bitrate. Upstream: 4."
 
@@ -3114,6 +3122,14 @@ msgstr "Read Less"
 msgid "Read More"
 msgstr "Read More"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:139
+msgid "Readiness poll interval (ms)"
+msgstr "Readiness poll interval (ms)"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:152
+msgid "Readiness timeout (ms)"
+msgstr "Readiness timeout (ms)"
+
 #: src/components/programming_controls/AddRedirectModal.tsx:148
 msgid "Redirect duration"
 msgstr "Redirect duration"
@@ -3257,7 +3273,7 @@ msgstr "Rescan Interval (hours)"
 #: src/components/channel_config/ChannelProgrammingConfig.tsx:233
 #: src/components/custom-shows/EditCustomShowForm.tsx:435
 #: src/components/filler/EditFillerListForm.tsx:172
-#: src/pages/settings/MichaelSettingsPage.tsx:154
+#: src/pages/settings/MichaelSettingsPage.tsx:180
 msgid "Reset"
 msgstr "Reset"
 
@@ -3380,7 +3396,7 @@ msgstr "Sample rate cannot be changed when copying input audio"
 #: src/pages/settings/FeaturesSettingsPage.tsx:170
 #: src/pages/settings/FfmpegSettingsPage.tsx:428
 #: src/pages/settings/HdhrSettingsPage.tsx:152
-#: src/pages/settings/MichaelSettingsPage.tsx:161
+#: src/pages/settings/MichaelSettingsPage.tsx:187
 #: src/pages/settings/ScannerSettingsPage.tsx:82
 #: src/pages/settings/XmlTvSettingsPage.tsx:222
 msgid "Save"
@@ -3456,7 +3472,7 @@ msgstr "Search…"
 msgid "Seasons"
 msgstr "Seasons"
 
-#: src/pages/settings/MichaelSettingsPage.tsx:139
+#: src/pages/settings/MichaelSettingsPage.tsx:165
 msgid "Segment duration (seconds)"
 msgstr "Segment duration (seconds)"
 
