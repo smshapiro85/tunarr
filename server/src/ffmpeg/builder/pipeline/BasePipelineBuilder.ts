@@ -34,7 +34,7 @@ import type { WatermarkInputSource } from '@/ffmpeg/builder/input/WatermarkInput
 import { HlsConcatOutputFormat } from '@/ffmpeg/builder/options/HlsConcatOutputFormat.js';
 import { HlsDirectOutputFormat } from '@/ffmpeg/builder/options/HlsDirectOutputFormat.js';
 import { HlsOutputFormat } from '@/ffmpeg/builder/options/HlsOutputFormat.js';
-import { EpisodeOverlayFilter } from '@/ffmpeg/builder/filter/EpisodeOverlayFilter.js';
+import { ProgramOverlayFilter } from '@/ffmpeg/builder/filter/ProgramOverlayFilter.js';
 import { resolveOverlayFontFile } from '@/ffmpeg/builder/filter/overlayFont.js';
 import { HlsSubtitleOutputFormat } from '@/ffmpeg/builder/options/HlsSubtitleOutputFormat.js';
 import { LogLevelOption } from '@/ffmpeg/builder/options/LogLevelOption.js';
@@ -875,7 +875,7 @@ export abstract class BasePipelineBuilder implements PipelineBuilder {
    * check the whole filter graph would fail to initialize and the channel would
    * fall back to the error screen.
    */
-  protected setEpisodeOverlay(currentState: FrameState): FrameState {
+  protected setProgramOverlay(currentState: FrameState): FrameState {
     const overlay = this.ffmpegState.episodeOverlay;
     if (!overlay || overlay.lines.length === 0) {
       return currentState;
@@ -896,7 +896,7 @@ export abstract class BasePipelineBuilder implements PipelineBuilder {
       return currentState;
     }
 
-    const filter = new EpisodeOverlayFilter(
+    const filter = new ProgramOverlayFilter(
       currentState.scaledSize,
       overlay.lines,
       overlay.holdSeconds,

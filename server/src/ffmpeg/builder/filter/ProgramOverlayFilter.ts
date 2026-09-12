@@ -3,7 +3,8 @@ import { FilterOption } from './FilterOption.ts';
 
 /**
  * Briefly identifies what is playing in the lower-right corner when a channel
- * starts, then fades out.
+ * starts, then fades out. Content-agnostic: it renders whatever lines it is
+ * given, so the caller decides how an episode, movie or track is described.
  *
  * Rendered as one `drawtext` per line rather than a single multi-line one:
  * drawtext has no right-align mode, but each filter resolves `tw` against its
@@ -15,7 +16,7 @@ import { FilterOption } from './FilterOption.ts';
  * Requires an ffmpeg built with libfreetype. Callers must check
  * {@link FfmpegCapabilities} for the drawtext filter before adding this.
  */
-export class EpisodeOverlayFilter extends FilterOption {
+export class ProgramOverlayFilter extends FilterOption {
   /** Seconds spent fading out, ending exactly at `holdSeconds`. */
   private static readonly FadeSeconds = 0.75;
 
@@ -47,7 +48,7 @@ export class EpisodeOverlayFilter extends FilterOption {
 
   get filter() {
     const lines = this.lines
-      .map((l) => EpisodeOverlayFilter.sanitize(l))
+      .map((l) => ProgramOverlayFilter.sanitize(l))
       .filter((l) => l.length > 0);
 
     if (lines.length === 0 || this.holdSeconds <= 0) {
@@ -61,11 +62,11 @@ export class EpisodeOverlayFilter extends FilterOption {
     const gap = Math.round(primary * 0.35);
     const border = Math.max(2, Math.round(primary / 14));
 
-    const fadeStart = Math.max(0, this.holdSeconds - EpisodeOverlayFilter.FadeSeconds);
+    const fadeStart = Math.max(0, this.holdSeconds - ProgramOverlayFilter.FadeSeconds);
     // Full opacity until fadeStart, linear ramp to 0 at holdSeconds, then off.
     const alpha =
       `if(lt(t,${fadeStart}),1,` +
-      `if(lt(t,${this.holdSeconds}),(${this.holdSeconds}-t)/${EpisodeOverlayFilter.FadeSeconds},0))`;
+      `if(lt(t,${this.holdSeconds}),(${this.holdSeconds}-t)/${ProgramOverlayFilter.FadeSeconds},0))`;
 
     const sizes = [primary, secondary];
     // Lay the block out from the bottom up so the last line sits on the margin.

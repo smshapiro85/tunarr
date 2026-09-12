@@ -54,15 +54,23 @@ Verified: surfing six channels with the cap at 3 held at exactly 3 sessions with
 eviction logged each time, and load times stayed flat at 1.0–2.0 s instead of
 climbing.
 
-## Episode overlay
+## Program overlay
 
-Shows two right-aligned lines in the lower-right corner when a channel starts,
-then fades out:
+Shows up to two right-aligned lines in the lower-right corner when a channel
+starts, then fades out. What they say depends on the program type — the first
+line is rendered larger, so it carries whatever identifies the program most
+directly:
 
-```
-Season 5 - Episode 2
-The Puffy Shirt
-```
+| Type | Line 1 | Line 2 |
+|---|---|---|
+| Episode | `Season 5 - Episode 2` | episode title |
+| Episode, no numbering | show title | episode title |
+| Movie | title | year |
+| Track / music video | title | artist |
+| Other video | title | — |
+
+A line is dropped when its field is empty, so a movie with no year or a track
+with no artist shows a single line rather than a gap.
 
 Rendered as one `drawtext` per line. drawtext has no right-align mode, but each
 filter resolves `tw` against its own string, so `x=w-tw-margin` aligns the lines
@@ -76,8 +84,9 @@ each time the session rolls to the next program. A session spawns a fresh ffmpeg
 per program *and* mid-episode when the transcode buffer runs low, so anything
 ungated would flash the overlay back up mid-show.
 
-Only episodes qualify — the overlay is skipped when `seasonNumber` or `episode`
-is absent, which covers movies and music.
+The setting keys are still named `episodeOverlay*`. They predate the overlay
+covering movies and music, and renaming them would orphan the stored values for
+no functional gain.
 
 !!! warning "Requires an ffmpeg with libfreetype"
     `drawtext` needs libfreetype, and **Homebrew's default `ffmpeg` bottle does

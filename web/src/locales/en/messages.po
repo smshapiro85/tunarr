@@ -745,8 +745,12 @@ msgid "Break Positioning"
 msgstr "Break Positioning"
 
 #: src/pages/settings/MichaelSettingsPage.tsx:202
-msgid "Briefly shows \"Season 3 - Episode 8\" and the episode title in the lower-right corner, then fades out. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program. Episodes only — movies and music are skipped."
-msgstr "Briefly shows \"Season 3 - Episode 8\" and the episode title in the lower-right corner, then fades out. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program. Episodes only — movies and music are skipped."
+#~ msgid "Briefly shows \"Season 3 - Episode 8\" and the episode title in the lower-right corner, then fades out. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program. Episodes only — movies and music are skipped."
+#~ msgstr "Briefly shows \"Season 3 - Episode 8\" and the episode title in the lower-right corner, then fades out. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program. Episodes only — movies and music are skipped."
+
+#: src/pages/settings/MichaelSettingsPage.tsx:202
+msgid "Briefly shows what is playing in the lower-right corner, then fades out. Episodes show \"Season 3 - Episode 8\" above the episode title; movies show the title and year; music shows the track and artist. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program."
+msgstr "Briefly shows what is playing in the lower-right corner, then fades out. Episodes show \"Season 3 - Episode 8\" above the episode title; movies show the title and year; music shows the track and artist. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program."
 
 #: src/components/settings/ffmpeg/TranscodeConfigAudioSettingsForm.tsx:142
 msgid "Buffer size cannot be changed when copying input audio"
@@ -1624,8 +1628,8 @@ msgid "EPG (Hours)"
 msgstr "EPG (Hours)"
 
 #: src/pages/settings/MichaelSettingsPage.tsx:186
-msgid "Episode Overlay"
-msgstr "Episode Overlay"
+#~ msgid "Episode Overlay"
+#~ msgstr "Episode Overlay"
 
 #: src/components/programs/Episodes.tsx:49
 #: src/pages/library/TrashPage.tsx:126
@@ -3033,6 +3037,10 @@ msgstr "Program Count"
 msgid "Program JSON"
 msgstr "Program JSON"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:186
+msgid "Program Overlay"
+msgstr "Program Overlay"
+
 #: src/pages/system/TroubleshootPage.tsx:268
 msgid "Program Playback Troubleshooter"
 msgstr "Program Playback Troubleshooter"
@@ -3598,12 +3606,16 @@ msgstr "Show Advanced"
 #~ msgstr "Show only synced libraries"
 
 #: src/pages/settings/MichaelSettingsPage.tsx:199
-msgid "Show season and episode when a channel starts"
-msgstr "Show season and episode when a channel starts"
+#~ msgid "Show season and episode when a channel starts"
+#~ msgstr "Show season and episode when a channel starts"
 
 #: src/pages/guide/GuidePage.tsx:155
 msgid "Show Stealth"
 msgstr "Show Stealth"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:199
+msgid "Show what's playing when a channel starts"
+msgstr "Show what's playing when a channel starts"
 
 #: src/components/programming_controls/ShuffleProgrammingModal.tsx:68
 msgid "Show:"

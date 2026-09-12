@@ -26,12 +26,14 @@ import { ChannelStreamModes } from '@tunarr/types';
 import dayjs from 'dayjs';
 import type { Duration } from 'dayjs/plugin/duration.js';
 import { injectable } from 'inversify';
-import { isUndefined, isNil} from 'lodash-es';
+import { compact, isNil, isUndefined } from 'lodash-es';
 import type { DeepReadonly } from 'ts-essentials';
 import { match, P } from 'ts-pattern';
+import { ProgramType } from '../db/schema/Program.ts';
 import type {
   ContentBackedStreamLineupItem,
   StreamLineupItem,
+  StreamLineupProgram,
 } from '../db/derived_types/StreamLineup.ts';
 import type { IChannelDB } from '../db/interfaces/IChannelDB.ts';
 import { FeatureFlagService } from '../services/FeatureFlagService.ts';
@@ -306,8 +308,11 @@ export class FfmpegStreamFactory {
    * again each time the session rolls to the next program -- a session spawns
    * a fresh ffmpeg per program, and mid-episode when the transcode buffer runs
    * low, so anything ungated would flash the overlay back up mid-show.
+   *
+   * The first line is rendered larger than the second, so it carries whatever
+   * identifies the program most directly for its type.
    */
-  private buildEpisodeOverlay(
+  private buildProgramOverlay(
     lineupItem: StreamLineupItem,
     isFirstTranscode: boolean,
   ): Maybe<{ lines: string[]; holdSeconds: number }> {
@@ -320,17 +325,40 @@ export class FfmpegStreamFactory {
       return undefined;
     }
 
-    const { seasonNumber, episode, title } = lineupItem.program;
-    if (isNil(seasonNumber) || isNil(episode)) {
-      return undefined;
-    }
+    const lines = compact(
+      this.programOverlayLines(lineupItem.program).map((l) =>
+        isNonEmptyString(l) ? l : null,
+      ),
+    );
 
-    const lines = [`Season ${seasonNumber} - Episode ${episode}`];
-    if (isNonEmptyString(title)) {
-      lines.push(title);
-    }
+    return lines.length > 0
+      ? { lines, holdSeconds: streaming.episodeOverlaySeconds }
+      : undefined;
+  }
 
-    return { lines, holdSeconds: streaming.episodeOverlaySeconds };
+  private programOverlayLines(
+    program: StreamLineupProgram,
+  ): (Maybe<string> | null)[] {
+    const { type, seasonNumber, episode, title, showTitle, artistName, year } =
+      program;
+
+    switch (type) {
+      case ProgramType.Episode:
+        // Fall back to the show name when a scrape produced no numbering,
+        // rather than dropping the overlay entirely.
+        return isNil(seasonNumber) || isNil(episode)
+          ? [showTitle, title]
+          : [`Season ${seasonNumber} - Episode ${episode}`, title];
+      case ProgramType.Movie:
+        return [title, isNil(year) ? null : `${year}`];
+      case ProgramType.Track:
+      case ProgramType.MusicVideo:
+        return [title, artistName];
+      case ProgramType.OtherVideo:
+        return [title, null];
+      default:
+        return [title, null];
+    }
   }
 
   async createStreamSession({
@@ -459,7 +487,7 @@ export class FfmpegStreamFactory {
         duration,
         ptsOffset,
         isFirstTranscode,
-        episodeOverlay: this.buildEpisodeOverlay(
+        episodeOverlay: this.buildProgramOverlay(
           lineupItem,
           isFirstTranscode ?? false,
         ),

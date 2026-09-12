@@ -183,7 +183,7 @@ export default function MichaelSettingsPage() {
       <Divider sx={{ my: 3 }} />
 
       <Typography variant="h6" sx={{ mb: 1 }}>
-        <Trans>Episode Overlay</Trans>
+        <Trans>Program Overlay</Trans>
       </Typography>
 
       <Grid container spacing={2} columns={{ xs: 1, sm: 2 }}>
@@ -196,15 +196,15 @@ export default function MichaelSettingsPage() {
                   name="episodeOverlayEnabled"
                 />
               }
-              label={t`Show season and episode when a channel starts`}
+              label={t`Show what's playing when a channel starts`}
             />
             <FormHelperText>
               <Trans>
-                Briefly shows "Season 3 - Episode 8" and the episode title in
-                the lower-right corner, then fades out. Only on the first tune
-                of a session, so it does not reappear when the channel rolls to
-                the next program. Episodes only &mdash; movies and music are
-                skipped.
+                Briefly shows what is playing in the lower-right corner, then
+                fades out. Episodes show "Season 3 - Episode 8" above the
+                episode title; movies show the title and year; music shows the
+                track and artist. Only on the first tune of a session, so it
+                does not reappear when the channel rolls to the next program.
               </Trans>
             </FormHelperText>
           </FormControl>
