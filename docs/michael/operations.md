@@ -138,6 +138,24 @@ so the config does not need cleaning up first.
 
 ## Updating from upstream
 
+!!! note "Rebundling the web app"
+    The service reports version `1.3.14-michael` via `TUNARR_VERSION` in the
+    LaunchAgent. The web bundle bakes its version in at build time from the same
+    variable, so rebundle with it set or the UI shows a permanent
+    "Version Mismatch!" banner:
+
+    ```bash
+    TUNARR_VERSION=1.3.14-michael pnpm --filter @tunarr/web bundle
+    ```
+
+!!! note "ffmpeg must have libfreetype"
+    The episode overlay uses `drawtext`, which Homebrew's default `ffmpeg`
+    bottle does not include. This deployment points at `ffmpeg-full`
+    (`/opt/homebrew/opt/ffmpeg-full/bin/ffmpeg`), which is keg-only and installs
+    alongside without shadowing the default. Verify with
+    `ffmpeg -filters | grep drawtext`. If it is missing the overlay is skipped
+    with a warning; streaming is unaffected.
+
 ```bash
 git fetch upstream --tags
 git rebase v1.3.15            # or whichever tag
