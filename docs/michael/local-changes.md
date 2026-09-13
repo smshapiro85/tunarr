@@ -13,7 +13,7 @@ reachable only through an environment variable.
 
 | Setting | Upstream | Fork default | What it does |
 |---|---|---|---|
-| `maxConcurrentSessions` | *did not exist* | 4 | Cap on simultaneous transcodes. 0 disables. |
+| `maxConcurrentSessions` | *did not exist* | 10 | Cap on simultaneous transcodes. 0 disables. |
 | `sessionStalenessMs` | 120,000 (env only) | 30,000 | How long a viewer may go without requesting the playlist before being dropped. |
 | `sessionCleanupDelaySeconds` | 15 (env only) | 10 | Grace period after the last viewer leaves before teardown. |
 | `initialSegmentCount` | 2 (hardcoded) | 1 | Segments that must exist before the playlist is served. |

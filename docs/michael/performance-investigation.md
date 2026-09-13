@@ -283,6 +283,35 @@ It also leaves almost no cushion, which is what surfaced the `-readrate`
 shortfall above as audible rebuffering. 2s is the better operating point here:
 roughly 350ms of startup buys several times the margin.
 
+## Channels failing to load after surfing
+
+Symptom: after tuning six or seven channels, nothing would load. The server log
+showed `No master playlist found for channel ...`, which the playlist route
+turns into an HTTP 500.
+
+Two causes, both self-inflicted:
+
+**The readiness gate did not wait for the master playlist.** It waited for
+segments and `stream.m3u8`, but the route requires `playlist.m3u8`, which ffmpeg
+writes separately. Normally both land within the same millisecond, so a 1s poll
+never noticed. Dropping the poll to 100ms tightened the window, and an evicted
+session's delayed directory cleanup can remove the master out from under its
+replacement. `getAdditionalRequiredFiles()` now includes it, so that case
+retries instead of failing.
+
+**The concurrency cap was churning sessions.** Measured on the same eight-channel
+surf:
+
+| Cap | Evictions | Load times | Failures |
+|---|---|---|---|
+| 4 | 12 | 0.85–3.4 s | 0 (after the gate fix) |
+| 10 | 0 | 0.84–1.76 s | 0 |
+
+The cap existed because concurrency used to cost a great deal — 2s alone versus
+9s with eight sessions — but that was a consequence of the gate requiring ~8s of
+media. With a ~2s gate the contention is minor, so a tight cap buys nothing and
+every eviction is another chance to hit the cleanup race. Default raised to 10.
+
 ## Client-side latency
 
 Server-side is ~1–2 s, but the Apple TV shows 3–5 s. The remainder is iPlayTV,

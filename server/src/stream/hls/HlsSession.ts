@@ -27,7 +27,7 @@ import { filter, isEmpty, last, maxBy, sortBy } from 'lodash-es';
 import fs from 'node:fs/promises';
 import path, { basename, dirname, extname } from 'node:path';
 import type { DeepRequired } from 'ts-essentials';
-import { ProgramStreamFactory } from '../ProgramStreamFactory.ts';
+import type { ProgramStreamFactory } from '../ProgramStreamFactory.ts';
 import type { BaseHlsSessionOptions } from './BaseHlsSession.js';
 import { BaseHlsSession } from './BaseHlsSession.js';
 import { HlsMasterPlaylistMutator } from './HlsMasterPlaylistMutator.js';
@@ -316,9 +316,16 @@ export class HlsSession extends BaseHlsSession<HlsSessionOptions> {
   }
 
   protected override getAdditionalRequiredFiles(): string[] {
-    return this.#currentSubtitleRendition
-      ? [this.getHlsOptions().subtitleStreamNameFormat]
-      : [];
+    // The readiness gate waited only for segments and stream.m3u8, but the
+    // playlist route requires the master (playlist.m3u8) and returns a 500 if
+    // it is missing. ffmpeg writes the two separately, and an evicted session's
+    // delayed directory cleanup can remove the master out from under its
+    // replacement -- so requiring it here turns a hard 500 into a retry.
+    const required = [basename(this._masterPlaylistPath)];
+    if (this.#currentSubtitleRendition) {
+      required.push(this.getHlsOptions().subtitleStreamNameFormat);
+    }
+    return required;
   }
 
   protected getHlsOptions(): DeepRequired<HlsOptions> {

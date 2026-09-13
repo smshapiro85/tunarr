@@ -78,8 +78,17 @@ export const DefaultServerSettings = {
  * channel start rather than upstream's conservative values.
  */
 export const StreamingTuningSettingsSchema = z.object({
-  /** Max transcodes running at once. 0 disables the limit. */
-  maxConcurrentSessions: z.number().int().min(0).max(64).default(4),
+  /**
+   * Max transcodes running at once. 0 disables the limit.
+   *
+   * A low cap was needed when the readiness gate required ~8s of media, which
+   * made concurrent transcodes contend badly (2s alone vs 9s with eight). With
+   * a ~2s gate that contention is largely gone, and aggressive eviction instead
+   * churns sessions — each eviction is a chance for a stopped session's delayed
+   * directory cleanup to race its own replacement. Keep this high enough that
+   * ordinary channel surfing never evicts.
+   */
+  maxConcurrentSessions: z.number().int().min(0).max(64).default(10),
   /** How long a connection may go without a heartbeat before it is dropped. */
   sessionStalenessMs: z.number().int().min(1000).max(3_600_000).default(30_000),
   /** Grace period between a session losing its last viewer and teardown. */
@@ -125,7 +134,7 @@ export type StreamingTuningSettings = z.infer<
 >;
 
 export const DefaultStreamingTuningSettings = {
-  maxConcurrentSessions: 4,
+  maxConcurrentSessions: 10,
   sessionStalenessMs: 30_000,
   sessionCleanupDelaySeconds: 10,
   initialSegmentCount: 1,
