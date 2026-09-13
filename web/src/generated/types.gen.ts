@@ -2991,6 +2991,7 @@ export type GetChannelsResponses = {
         onDemand: {
             enabled: boolean;
         };
+        singleShowChannel: boolean;
         programCount: number;
         streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
         transcodeConfigId: string;
@@ -3070,6 +3071,7 @@ export type CreateChannelV2Data = {
             onDemand?: {
                 enabled: boolean;
             };
+            singleShowChannel: boolean;
             streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
             transcodeConfigId: string;
             subtitlesEnabled: boolean;
@@ -3197,6 +3199,7 @@ export type CreateChannelV2Responses = {
         onDemand: {
             enabled: boolean;
         };
+        singleShowChannel: boolean;
         programCount: number;
         streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
         transcodeConfigId: string;
@@ -3357,6 +3360,7 @@ export type GetChannelsByNumberV2Responses = {
         onDemand: {
             enabled: boolean;
         };
+        singleShowChannel: boolean;
         programCount: number;
         streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
         transcodeConfigId: string;
@@ -3434,6 +3438,7 @@ export type PutApiChannelsByIdData = {
         onDemand?: {
             enabled: boolean;
         };
+        singleShowChannel: boolean;
         streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
         transcodeConfigId: string;
         subtitlesEnabled: boolean;
@@ -3563,6 +3568,7 @@ export type PutApiChannelsByIdResponses = {
         onDemand: {
             enabled: boolean;
         };
+        singleShowChannel: boolean;
         programCount: number;
         streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
         transcodeConfigId: string;
@@ -6716,6 +6722,7 @@ export type GetApiChannelsByIdScheduleResponses = {
                     onDemand: {
                         enabled: boolean;
                     };
+                    singleShowChannel: boolean;
                     programCount: number;
                     streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
                     transcodeConfigId: string;
@@ -7106,6 +7113,7 @@ export type GetApiChannelsByIdScheduleResponses = {
                     onDemand: {
                         enabled: boolean;
                     };
+                    singleShowChannel: boolean;
                     programCount: number;
                     streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
                     transcodeConfigId: string;
@@ -13179,6 +13187,7 @@ export type PostApiTroubleshootResponses = {
             onDemand: {
                 enabled: boolean;
             };
+            singleShowChannel: boolean;
             programCount: number;
             streamMode: 'hls' | 'hls_slower' | 'mpegts' | 'hls_direct' | 'hls_direct_v2';
             transcodeConfigId: string;

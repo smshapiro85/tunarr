@@ -1428,6 +1428,7 @@ export class TVGuideService {
           .executeTakeFirstOrThrow()
       ).uuid,
       subtitlesEnabled: false,
+      singleShowChannel: false,
       streamSelectionProfileId: null,
     };
 

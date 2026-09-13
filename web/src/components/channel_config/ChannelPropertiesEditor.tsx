@@ -307,6 +307,39 @@ export function ChannelPropertiesEditor() {
                 )}
               />
             </Stack>
+            <Stack gap={2}>
+              <Typography variant="h5">
+                <Trans>Single Show Channel</Trans>
+              </Typography>
+              <Typography variant="body2">
+                <Trans>
+                  For a channel that plays episodes of just one show, the show's
+                  name is already the channel name, so IPTV clients end up
+                  listing it twice &mdash; once as the channel and again as
+                  every program. When enabled, the guide shows the episode title
+                  instead, so you see "Bluey" followed by "Sleepytime" rather
+                  than "Bluey" twice.
+                  <br />
+                  Leave this off for channels that mix several shows, where the
+                  show name is what tells the programs apart.
+                </Trans>
+              </Typography>
+              <Controller
+                control={control}
+                name="singleShowChannel"
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={field.value ?? false}
+                        onChange={(e) => field.onChange(e.target.checked)}
+                      />
+                    }
+                    label={t`Enabled`}
+                  />
+                )}
+              />
+            </Stack>
           </Stack>
         </Box>
       </>

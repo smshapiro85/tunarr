@@ -71,7 +71,7 @@ export class XmlTvWriter {
       ),
       programmes: flatMap(channels, ({ channel, programs }) =>
         map(programs, (p) =>
-          this.makeXmlTvProgram(p, xmlChannelIdById[channel.uuid]!),
+          this.makeXmlTvProgram(p, xmlChannelIdById[channel.uuid]!, channel),
         ),
       ),
     } satisfies Xmltv;
@@ -115,7 +115,13 @@ export class XmlTvWriter {
   private makeXmlTvProgram(
     guideItem: MaterializedGuideItem,
     xmlChannelId: string,
+    channel: ChannelOrm,
   ): XmltvProgramme {
+    // A channel devoted to one show already carries that show's name as the
+    // channel name, so titling every programme with the show as well reads as
+    // "Bluey / Bluey" in guide clients. Promote the episode to the title.
+    const singleShowChannel = channel.singleShowChannel ?? false;
+
     const title = match(guideItem)
       .with(
         { programming: { type: 'program' } },
@@ -126,7 +132,9 @@ export class XmlTvWriter {
             case 'other_video':
               return title ?? program.title;
             case 'episode':
-              return program.show?.title ?? program.showTitle ?? program.title;
+              return singleShowChannel
+                ? (title ?? program.title)
+                : (program.show?.title ?? program.showTitle ?? program.title);
             case 'track':
               return (
                 program.album?.title ?? program.artistName ?? program.title
@@ -144,7 +152,11 @@ export class XmlTvWriter {
 
     const subTitle = match(guideItem.programming)
       .with({ type: 'program', program: { type: 'episode' } }, ({ program }) =>
-        program.title === title ? undefined : program.title,
+        // On a single-show channel the episode is already the title; a
+        // sub-title would only repeat it.
+        singleShowChannel || program.title === title
+          ? undefined
+          : program.title,
       )
       .with(
         { type: 'program', program: { type: 'track' } },
@@ -171,7 +183,12 @@ export class XmlTvWriter {
 
     if (guideItem.programming.type === 'program') {
       const program = guideItem.programming.program;
-      if (program.type !== 'movie' && title !== guideItem.title) {
+      const episodeIsTitle = singleShowChannel && program.type === 'episode';
+      if (
+        program.type !== 'movie' &&
+        !episodeIsTitle &&
+        title !== guideItem.title
+      ) {
         partial.subTitle ??= [
           {
             _value: escape(guideItem.title),

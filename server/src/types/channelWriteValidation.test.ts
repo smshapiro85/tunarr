@@ -135,6 +135,7 @@ describe('SaveableChannelSchema uses the strict variants', () => {
     streamMode: 'hls',
     transcodeConfigId: '00000000-0000-0000-0000-000000000000',
     subtitlesEnabled: false,
+    singleShowChannel: false,
   };
 
   test('accepts a valid channel', () => {

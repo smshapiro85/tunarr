@@ -57,6 +57,7 @@ export const dbChannelToApiChannel = ({
     onDemand: {
       enabled: isDefined(lineup.onDemandConfig),
     },
+    singleShowChannel: channel.singleShowChannel ?? false,
     programCount: filter(lineup.items, { type: 'content' }).length,
     streamMode: channel.streamMode,
     transcodeConfigId: channel.transcodeConfigId,
@@ -110,6 +111,7 @@ export const ormChannelToApiChannel = ({
     onDemand: {
       enabled: isDefined(lineup.onDemandConfig),
     },
+    singleShowChannel: channel.singleShowChannel ?? false,
     programCount: filter(lineup.items, { type: 'content' }).length,
     streamMode: channel.streamMode,
     transcodeConfigId: channel.transcodeConfigId,

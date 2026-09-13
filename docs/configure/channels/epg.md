@@ -25,3 +25,7 @@ Tunarr populates the XMLTV output with program metadata sourced from your media 
 
 !!! info
     Genre data is only available for programs that have genre metadata in the originating media source. If a program's entry in your media server has no genres attached, the `<category>` tag will not be present for that program in the XMLTV output.
+
+## Single Show Channels
+
+For a channel built from one show, the show name is already the channel name, so titling every program with it as well is redundant. Enabling [Single Show Channel](/configure/channels/properties) on the channel puts the episode title in the XMLTV `<title>` tag instead, and omits the `<sub-title>` that would only repeat it.

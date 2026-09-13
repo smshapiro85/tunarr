@@ -227,6 +227,11 @@ export class DirectMigrationProvider implements MigrationProvider {
         migration1777908252: makeMigrationFromSqlFile(
           './sql/0044_useful_groot.sql',
         ),
+        // Adds channel.single_show_channel and turns it on for every channel
+        // whose programming is drawn from exactly one show.
+        migration1789339273: makeMigrationFromSqlFile(
+          './sql/0045_single_show_channel.sql',
+        ),
       } satisfies Record<string, TunarrDatabaseMigration>,
       wrapWithTransaction,
     );

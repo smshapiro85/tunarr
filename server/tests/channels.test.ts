@@ -36,6 +36,7 @@ function makeChannelPayload(
     transcodeConfigId,
     disableFillerOverlay: false,
     subtitlesEnabled: false,
+    singleShowChannel: false,
   };
 }
 

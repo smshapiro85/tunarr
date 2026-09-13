@@ -188,6 +188,84 @@ describe('XmlTvWriter', () => {
     });
   });
 
+  describe('single show channels', () => {
+    const makeEpisodeGuide = (
+      singleShowChannel: boolean,
+    ): MaterializedChannelPrograms[] => {
+      const episode = makeProgram({
+        type: 'episode',
+        title: 'Sleepytime',
+        showTitle: 'Bluey',
+        show: { uuid: v4(), title: 'Bluey' },
+        seasonNumber: 2,
+        episode: 26,
+        summary: 'Bingo goes on a dream journey.',
+      });
+
+      return [
+        {
+          channel: createChannel({ number: 1, singleShowChannel }),
+          programs: [
+            {
+              // TvGuideService materializes the guide item title from the
+              // program, i.e. the episode name.
+              title: episode.title,
+              programming: { type: 'program', program: episode },
+            },
+          ],
+        },
+      ] as MaterializedChannelPrograms[];
+    };
+
+    test('titles programmes with the show when the flag is off', () => {
+      const writer = new XmlTvWriter(inMemorySettingsDB());
+      const programme = writer.generateXmltv(makeEpisodeGuide(false))
+        .programmes[0];
+
+      expect(programme?.title[0]?._value).toBe('Bluey');
+      expect(programme?.subTitle?.[0]?._value).toBe('Sleepytime');
+    });
+
+    test('titles programmes with the episode when the flag is on', () => {
+      // The channel name already says "Bluey"; repeating it as the programme
+      // title is the duplication this flag exists to remove.
+      const writer = new XmlTvWriter(inMemorySettingsDB());
+      const programme = writer.generateXmltv(makeEpisodeGuide(true))
+        .programmes[0];
+
+      expect(programme?.title[0]?._value).toBe('Sleepytime');
+      expect(programme?.subTitle).toBeUndefined();
+    });
+
+    test('keeps season and episode numbers on a single show channel', () => {
+      const writer = new XmlTvWriter(inMemorySettingsDB());
+      const programme = writer.generateXmltv(makeEpisodeGuide(true))
+        .programmes[0];
+
+      expect(
+        programme?.episodeNum?.find((e) => e.system === 'onscreen')?._value,
+      ).toBe('S2E26');
+    });
+
+    test('leaves movies on a single show channel alone', () => {
+      const writer = new XmlTvWriter(inMemorySettingsDB());
+      const movie = makeProgram({ type: 'movie', title: 'Paddington' });
+      const output = writer.generateXmltv([
+        {
+          channel: createChannel({ number: 1, singleShowChannel: true }),
+          programs: [
+            {
+              title: movie.title,
+              programming: { type: 'program', program: movie },
+            },
+          ],
+        },
+      ] as MaterializedChannelPrograms[]);
+
+      expect(output.programmes[0]?.title[0]?._value).toBe('Paddington');
+    });
+  });
+
   describe('resolveArtworkUrl', () => {
     const resolveArtworkUrl = XmlTvWriter.resolveArtworkUrl;
 

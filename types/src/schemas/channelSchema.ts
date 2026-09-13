@@ -177,6 +177,10 @@ export const ChannelSchema = z.object({
   onDemand: z.object({
     enabled: z.boolean(),
   }),
+  // Channels dedicated to a single show duplicate that show's name in guide
+  // clients -- once as the channel name, once as every programme title. When
+  // set, the EPG carries the episode title instead.
+  singleShowChannel: z.boolean(),
   programCount: z.number(),
   streamMode: ChannelStreamModeSchema,
   transcodeConfigId: z.uuid(),

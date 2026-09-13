@@ -1570,6 +1570,7 @@ msgid "Enable Watermark"
 msgstr "Enable Watermark"
 
 #: src/components/channel_config/ChannelPropertiesEditor.tsx:305
+#: src/components/channel_config/ChannelPropertiesEditor.tsx:338
 #: src/pages/system/StatusPage.tsx:335
 msgid "Enabled"
 msgstr "Enabled"
@@ -1618,7 +1619,7 @@ msgstr "Enter your Emby password to generate a new access token."
 msgid "Enter your Jellyfin password to generate a new access token.<0/><1>NOTE:</1> These are never saved to the Tunarr DB. Instead they are sent to Jellyfin to exchange for a session token."
 msgstr "Enter your Jellyfin password to generate a new access token.<0/><1>NOTE:</1> These are never saved to the Tunarr DB. Instead they are sent to Jellyfin to exchange for a session token."
 
-#: src/components/channel_config/EditChannelForm.tsx:247
+#: src/components/channel_config/EditChannelForm.tsx:248
 msgid "EPG"
 msgstr "EPG"
 
@@ -1962,7 +1963,7 @@ msgstr "Fixed Interval"
 
 #: src/components/channel_config/AddProgrammingButton.tsx:68
 #: src/components/channel_config/ChannelProgrammingDeleteOptions.tsx:47
-#: src/components/channel_config/EditChannelForm.tsx:246
+#: src/components/channel_config/EditChannelForm.tsx:247
 #: src/hooks/programming_controls/useSlotProgramOptions.ts:111
 #: src/hooks/programming_controls/useSlotProgramOptions.ts:115
 #: src/hooks/slot_scheduler/useSlotName.ts:21
@@ -1977,6 +1978,10 @@ msgstr "Flex"
 #: src/pages/channels/TimeSlotEditorPage.tsx:430
 msgid "Flex Style"
 msgstr "Flex Style"
+
+#: src/components/channel_config/ChannelPropertiesEditor.tsx:315
+msgid "For a channel that plays episodes of just one show, the show's name is already the channel name, so IPTV clients end up listing it twice — once as the channel and again as every program. When enabled, the guide shows the episode title instead, so you see \"Bluey\" followed by \"Sleepytime\" rather than \"Bluey\" twice.<0/>Leave this off for channels that mix several shows, where the show name is what tells the programs apart."
+msgstr "For a channel that plays episodes of just one show, the show's name is already the channel name, so IPTV clients end up listing it twice — once as the channel and again as every program. When enabled, the guide shows the episode title instead, so you see \"Bluey\" followed by \"Sleepytime\" rather than \"Bluey\" twice.<0/>Leave this off for channels that mix several shows, where the show name is what tells the programs apart."
 
 #: src/components/settings/media_source/PlexServerEditDialog.tsx:292
 msgid "For more details on manually retrieving a Plex token, see <0>here</0>"
@@ -3100,7 +3105,7 @@ msgstr ""
 msgid "Programs Too Long"
 msgstr "Programs Too Long"
 
-#: src/components/channel_config/EditChannelForm.tsx:245
+#: src/components/channel_config/EditChannelForm.tsx:246
 msgid "Properties"
 msgstr "Properties"
 
@@ -3665,6 +3670,10 @@ msgstr "Shuffle Programming"
 msgid "Shuffle programming in a channel, optionally grouping programs by certain criteria."
 msgstr "Shuffle programming in a channel, optionally grouping programs by certain criteria."
 
+#: src/components/channel_config/ChannelPropertiesEditor.tsx:312
+msgid "Single Show Channel"
+msgstr "Single Show Channel"
+
 #: src/components/slot_scheduler/MidRollConfigPanel.tsx:435
 msgid "Skip mid-roll for programs shorter than this"
 msgstr "Skip mid-roll for programs shorter than this"
@@ -3823,7 +3832,7 @@ msgstr "Stream Selection"
 msgid "Stream Startup & Concurrency"
 msgstr "Stream Startup & Concurrency"
 
-#: src/components/channel_config/EditChannelForm.tsx:248
+#: src/components/channel_config/EditChannelForm.tsx:249
 msgid "Streaming"
 msgstr "Streaming"
 

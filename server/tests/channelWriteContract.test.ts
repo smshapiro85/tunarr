@@ -28,6 +28,7 @@ function channelPayload(): Partial<SaveableChannel> {
     transcodeConfigId,
     disableFillerOverlay: false,
     subtitlesEnabled: false,
+    singleShowChannel: false,
   };
 }
 
