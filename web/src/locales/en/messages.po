@@ -2042,6 +2042,10 @@ msgstr "Grouping works as follows:"
 msgid "Guide"
 msgstr "Guide"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:245
+msgid "Guide (EPG)"
+msgstr "Guide (EPG)"
+
 #: src/pages/guide/GuidePage.tsx:137
 msgid "Guide Start Time"
 msgstr "Guide Start Time"
@@ -3106,6 +3110,10 @@ msgstr "Properties"
 msgid "Protocol must be HTTP or HTTPS"
 msgstr "Protocol must be HTTP or HTTPS"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:253
+msgid "Put season, episode and title in the description"
+msgstr "Put season, episode and title in the description"
+
 #: src/components/settings/ffmpeg/TranscodeConfigVideoSettingsForm.tsx:142
 msgid "QSV Device"
 msgstr "QSV Device"
@@ -3297,7 +3305,7 @@ msgstr "Rescan Interval (hours)"
 #: src/components/channel_config/ChannelProgrammingConfig.tsx:233
 #: src/components/custom-shows/EditCustomShowForm.tsx:435
 #: src/components/filler/EditFillerListForm.tsx:172
-#: src/pages/settings/MichaelSettingsPage.tsx:250
+#: src/pages/settings/MichaelSettingsPage.tsx:274
 msgid "Reset"
 msgstr "Reset"
 
@@ -3420,7 +3428,7 @@ msgstr "Sample rate cannot be changed when copying input audio"
 #: src/pages/settings/FeaturesSettingsPage.tsx:170
 #: src/pages/settings/FfmpegSettingsPage.tsx:428
 #: src/pages/settings/HdhrSettingsPage.tsx:152
-#: src/pages/settings/MichaelSettingsPage.tsx:257
+#: src/pages/settings/MichaelSettingsPage.tsx:281
 #: src/pages/settings/ScannerSettingsPage.tsx:82
 #: src/pages/settings/XmlTvSettingsPage.tsx:222
 msgid "Save"
@@ -3634,6 +3642,10 @@ msgstr "Show: {0}"
 #: src/hooks/programming_controls/useSlotProgramOptions.ts:66
 msgid "Shows"
 msgstr "Shows"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:256
+msgid "Shows “Season 3 Episode 6 \"Mystery of Panama\" — description” in the guide, for clients that only display the description field. Applied when the guide is rendered, so it is never written into your Plex data and cannot be applied twice. Episodes only."
+msgstr "Shows “Season 3 Episode 6 \"Mystery of Panama\" — description” in the guide, for clients that only display the description field. Applied when the guide is rendered, so it is never written into your Plex data and cannot be applied twice. Episodes only."
 
 #: src/components/programming_controls/AddReplicateModal.tsx:100
 #: src/components/programming_controls/ShuffleProgrammingModal.tsx:82

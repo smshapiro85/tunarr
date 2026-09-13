@@ -309,6 +309,7 @@ export const UpdateSystemSettingsRequestSchema = z.object({
       episodeOverlayEnabled: z.boolean().optional(),
       episodeOverlaySeconds: z.number().min(1).max(60).optional(),
       transcodeReadRate: z.number().min(1).max(8).optional(),
+      epgEpisodePrefix: z.boolean().optional(),
     })
     .optional(),
 });

@@ -239,6 +239,30 @@ export default function MichaelSettingsPage() {
         </Grid>
       </Grid>
 
+      <Divider sx={{ my: 3 }} />
+
+      <Typography variant="h6" sx={{ mb: 1 }}>
+        <Trans>Guide (EPG)</Trans>
+      </Typography>
+
+      <FormControl fullWidth sx={{ mb: 1 }}>
+        <FormControlLabel
+          control={
+            <CheckboxFormController control={control} name="epgEpisodePrefix" />
+          }
+          label={t`Put season, episode and title in the description`}
+        />
+        <FormHelperText>
+          <Trans>
+            Shows &ldquo;Season 3 Episode 6 &quot;Mystery of Panama&quot;
+            &mdash; description&rdquo; in the guide, for clients that only
+            display the description field. Applied when the guide is rendered,
+            so it is never written into your Plex data and cannot be applied
+            twice. Episodes only.
+          </Trans>
+        </FormHelperText>
+      </FormControl>
+
       <Divider sx={{ my: 2 }} />
 
       <Stack direction="row" justifyContent="flex-end" gap={1}>

@@ -179,14 +179,33 @@ export class XmlTvWriter {
         ];
       }
 
+      const [seasonNumber, episodeNumber] = match(program)
+        .with({ type: 'episode' }, (ep) => {
+          return [ep.season?.index ?? ep.seasonNumber, ep.episode];
+        })
+        .with({ type: 'track' }, (track) => [track.album?.index, track.episode])
+        .otherwise(() => [null, null]);
+
       const desc = compact([program.summary, program.plot]).find(
         isNonEmptyString,
       );
 
-      if (desc) {
+      const descText = this.settingsDB.systemSettings().streaming
+        ?.epgEpisodePrefix
+        ? XmlTvWriter.withEpisodePrefix(
+            desc,
+            program.type,
+            seasonNumber,
+            episodeNumber,
+            program.title,
+            title,
+          )
+        : desc;
+
+      if (isNonEmptyString(descText)) {
         partial.desc ??= [
           {
-            _value: escape(desc),
+            _value: escape(descText),
           },
         ];
       }
@@ -212,13 +231,6 @@ export class XmlTvWriter {
           _value: genre.name,
         });
       }
-
-      const [seasonNumber, episodeNumber] = match(program)
-        .with({ type: 'episode' }, (ep) => {
-          return [ep.season?.index ?? ep.seasonNumber, ep.episode];
-        })
-        .with({ type: 'track' }, (track) => [track.album?.index, track.episode])
-        .otherwise(() => [null, null]);
 
       if (!isNil(seasonNumber) && !isNil(episodeNumber)) {
         partial.episodeNum = [
@@ -250,6 +262,49 @@ export class XmlTvWriter {
     }
 
     return partial;
+  }
+
+  /**
+   * Builds `Season 3 Episode 6 "Mystery of Panama" - <description>` for
+   * episodes, for guide clients that surface only the description field.
+   *
+   * Deterministic and total: derived purely from its arguments and applied at
+   * render time, never written back to the stored description, so regenerating
+   * the guide cannot double-apply it.
+   *
+   * Degrades one piece at a time rather than emitting placeholders. Anything
+   * other than an episode, or a missing season/episode number, returns the
+   * description untouched -- no "Season undefined". A missing episode title, or
+   * one that merely repeats the programme title (common when a show has no
+   * per-episode name), drops the quoted portion instead of printing it twice.
+   * With no description at all the prefix stands alone, without a dangling
+   * separator.
+   */
+  static withEpisodePrefix(
+    desc: string | undefined,
+    programType: string,
+    seasonNumber: number | null | undefined,
+    episodeNumber: number | null | undefined,
+    episodeTitle: string | null | undefined,
+    programmeTitle: string | undefined,
+  ): string | undefined {
+    if (
+      programType !== 'episode' ||
+      isNil(seasonNumber) ||
+      isNil(episodeNumber)
+    ) {
+      return desc;
+    }
+
+    let prefix = `Season ${seasonNumber} Episode ${episodeNumber}`;
+    if (
+      isNonEmptyString(episodeTitle) &&
+      episodeTitle.trim() !== (programmeTitle ?? '').trim()
+    ) {
+      prefix += ` "${episodeTitle.trim()}"`;
+    }
+
+    return isNonEmptyString(desc) ? `${prefix} - ${desc}` : prefix;
   }
 
   static resolveArtworkUrl(

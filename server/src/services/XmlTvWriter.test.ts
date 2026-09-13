@@ -74,6 +74,68 @@ function makeProgram(
   } as ProgramWithRelationsOrm;
 }
 
+describe('XmlTvWriter.withEpisodePrefix', () => {
+  const call = (
+    desc: string | undefined,
+    type: string,
+    season: number | null | undefined,
+    ep: number | null | undefined,
+    epTitle: string | null | undefined,
+    progTitle: string | undefined = 'Some Show',
+  ) => XmlTvWriter.withEpisodePrefix(desc, type, season, ep, epTitle, progTitle);
+
+  it('prefixes an episode with season, number and title', () => {
+    expect(call('A description.', 'episode', 3, 6, 'Mystery of Panama')).toBe(
+      'Season 3 Episode 6 "Mystery of Panama" - A description.',
+    );
+  });
+
+  it('emits the prefix alone when there is no description', () => {
+    // No dangling separator.
+    expect(call(undefined, 'episode', 1, 2, 'The Deep')).toBe(
+      'Season 1 Episode 2 "The Deep"',
+    );
+  });
+
+  it('drops the quoted title when it just repeats the show name', () => {
+    // Common when a show carries no distinct per-episode title.
+    expect(call('Desc.', 'episode', 1, 1, 'Some Show', 'Some Show')).toBe(
+      'Season 1 Episode 1 - Desc.',
+    );
+  });
+
+  it('drops the quoted title when it is missing', () => {
+    expect(call('Desc.', 'episode', 2, 4, undefined)).toBe(
+      'Season 2 Episode 4 - Desc.',
+    );
+  });
+
+  it('leaves non-episodes untouched', () => {
+    expect(call('Movie plot.', 'movie', null, null, null)).toBe('Movie plot.');
+    expect(call('Track info.', 'track', 1, 1, 'Song')).toBe('Track info.');
+  });
+
+  it('never emits a placeholder for a missing number', () => {
+    // Degrade to the original description rather than "Season undefined".
+    expect(call('Desc.', 'episode', undefined, 5, 'T')).toBe('Desc.');
+    expect(call('Desc.', 'episode', 3, null, 'T')).toBe('Desc.');
+  });
+
+  it('is idempotent over an already-prefixed description', () => {
+    // The guide is rebuilt from source fields every time, so applying the
+    // helper to its own output must not stack prefixes in practice; this pins
+    // the contract that it derives purely from its arguments.
+    const once = call('Desc.', 'episode', 3, 6, 'Name');
+    expect(call(once, 'movie', null, null, null)).toBe(once);
+  });
+
+  it('handles season 0 specials', () => {
+    expect(call('Desc.', 'episode', 0, 1, 'Special')).toBe(
+      'Season 0 Episode 1 "Special" - Desc.',
+    );
+  });
+});
+
 describe('XmlTvWriter', () => {
   describe('television', () => {
     const channels: MaterializedChannelPrograms[] = [

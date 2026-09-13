@@ -10446,6 +10446,7 @@ export type GetApiSystemSettingsResponses = {
             episodeOverlayEnabled: boolean;
             episodeOverlaySeconds: number;
             transcodeReadRate: number;
+            epgEpisodePrefix: boolean;
         };
         dataDirectory: string;
         searchServerAddress: string;
@@ -10520,6 +10521,7 @@ export type PutApiSystemSettingsData = {
             episodeOverlayEnabled?: boolean;
             episodeOverlaySeconds?: number;
             transcodeReadRate?: number;
+            epgEpisodePrefix?: boolean;
         };
     };
     path?: never;
@@ -10598,6 +10600,7 @@ export type PutApiSystemSettingsResponses = {
             episodeOverlayEnabled: boolean;
             episodeOverlaySeconds: number;
             transcodeReadRate: number;
+            epgEpisodePrefix: boolean;
         };
         dataDirectory: string;
         searchServerAddress: string;

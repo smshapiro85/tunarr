@@ -135,6 +135,14 @@ export const StreamingTuningSettingsSchema = z.object({
    * not run away from the wall clock.
    */
   transcodeReadRate: z.number().min(1).max(8).default(2),
+  /**
+   * Prefix EPG descriptions for episodes with season, episode number and
+   * episode title, e.g. `Season 3 Episode 6 "Mystery of Panama" - <description>`.
+   *
+   * Applied when the guide is rendered, never written back to the stored
+   * description, so regenerating the EPG cannot double-apply it.
+   */
+  epgEpisodePrefix: z.boolean().default(true),
 });
 
 export type StreamingTuningSettings = z.infer<
@@ -152,6 +160,7 @@ export const DefaultStreamingTuningSettings = {
   episodeOverlayEnabled: true,
   episodeOverlaySeconds: 5,
   transcodeReadRate: 2,
+  epgEpisodePrefix: true,
 } satisfies StreamingTuningSettings;
 
 export const SystemSettingsSchema = z.object({

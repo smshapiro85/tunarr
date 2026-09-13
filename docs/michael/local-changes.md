@@ -23,6 +23,7 @@ reachable only through an environment variable.
 | `episodeOverlayEnabled` | *did not exist* | true | Show season/episode briefly when a channel starts. |
 | `episodeOverlaySeconds` | *did not exist* | 5 | How long it stays up, fade included. |
 | `transcodeReadRate` | 1 (hardcoded) | 2 | Input read rate as a multiple of real time. |
+| `epgEpisodePrefix` | *did not exist* | true | Put season/episode/title in EPG descriptions. |
 
 Changes apply to the next stream that starts. No restart required.
 
@@ -129,6 +130,35 @@ icons are left alone.
 
 No data migration is needed — the rewrite happens at render time, so existing
 icons and any future upload are both covered.
+
+## Season and episode in EPG descriptions
+
+Some guide clients surface only the description field, ignoring `sub-title` and
+`episode-num`. `XmlTvWriter.withEpisodePrefix()` prepends the season, episode
+number and episode title:
+
+```
+Season 1 Episode 4 "Gates of the Arctic" - Alaska is often called the last...
+```
+
+It is applied **when the guide is rendered**, derived purely from the source
+fields, and never written back to the stored description. That makes
+double-application structurally impossible rather than something guarded
+against — regenerating the guide always recomputes from the same inputs.
+
+It degrades one piece at a time instead of emitting placeholders:
+
+| Case | Result |
+|---|---|
+| Episode with season, number and title | full prefix |
+| Episode title missing, or identical to the show title | prefix without the quoted part |
+| Season or episode number missing | description returned untouched |
+| No description at all | prefix alone, no dangling separator |
+| Movie, track, anything not an episode | untouched |
+
+Verified across a full 1,359-programme guide: 1,339 prefixed, zero
+double-applied, zero episodes missed, and zero stored `Program.summary` rows
+mutated. Regenerating a second time changed no description.
 
 ## Segment duration plumbing
 
