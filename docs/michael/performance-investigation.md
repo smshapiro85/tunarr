@@ -359,6 +359,43 @@ End-to-end time to first frame now measures 1.6–2.6 s (median ~2.0 s), against
 ~1.1–1.9 s to serve the playlist. Run-to-run variance is significant; treat
 single measurements sceptically.
 
+## Tonemapping is CPU-bound, and it caps concurrency
+
+Measured on a live Nature channel playing 4K HDR10 (`3840x2160, smpte2084`):
+
+| | Normal channel | Nature channel (tonemapped) |
+|---|---|---|
+| ffmpeg CPU | 36% | **518%** |
+| Production rate | ~2.2x realtime | **~1.5x** |
+
+The cost is the software `zscale` + `tonemap` chain running on every frame, not
+the higher bitrate. It cannot reach its configured `readrate 2` because it is
+CPU-bound, though 1.5x still builds buffer steadily and does not starve.
+
+!!! warning "One tonemapped channel at a time"
+    Two concurrent tonemapped 4K channels would need roughly 1037% of the
+    machine's 1200%, pushing production below 1.0x — real, repeated stuttering
+    rather than a one-off blip. Normal channels are unaffected and can run
+    alongside.
+
+The thinner margin is also why the playlist-exhaustion stall below showed as an
+actual half-second skip on Nature channels, where other channels only flashed a
+buffering indicator.
+
+## Playlist exhaustion at startup
+
+Symptom: channel starts fast, buffering indicator appears a few seconds in, then
+plays cleanly forever.
+
+The client's first playlist fetch carried only `initialSegmentCount x
+hlsSegmentSeconds` of media — 4s at 2x2. It plays that, then must refresh the
+playlist to learn about more, and VLC 3.0.4's whole-second refresh scheduling
+can be 1-2s late. The buffer empties in between. Once the refresh lands the
+client receives the full playlist (100+ segments) and never stalls again.
+
+Raising `initialSegmentCount` to 3 (6s of media) bridges the gap and resolved it
+on the actual Apple TV. The cost is roughly 0.25-0.5s of startup.
+
 ## Client-side latency
 
 Server-side is ~1–2 s, but the Apple TV shows 3–5 s. The remainder is iPlayTV,
