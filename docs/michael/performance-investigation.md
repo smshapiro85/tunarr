@@ -359,28 +359,32 @@ End-to-end time to first frame now measures 1.6–2.6 s (median ~2.0 s), against
 ~1.1–1.9 s to serve the playlist. Run-to-run variance is significant; treat
 single measurements sceptically.
 
-## Tonemapping is CPU-bound, and it caps concurrency
+## Tonemapping was running at source resolution
 
-Measured on a live Nature channel playing 4K HDR10 (`3840x2160, smpte2084`):
+A tonemapped 4K HDR channel measured 518% CPU and only 1.5x realtime, against
+36% and 2.2x for a normal channel — surprising on a 12-core M2 Max.
 
-| | Normal channel | Nature channel (tonemapped) |
+The cause was filter order. `SoftwarePipelineBuilder` ran `setTonemap()` before
+`setScale()`, so the tonemap chain — which converts to 32-bit float RGB and
+works per pixel — processed the full 3840x2160 frame before it was downscaled to
+1080p. Four times the necessary pixels through the most expensive filter in the
+pipeline.
+
+Reordering `setScale()` ahead of `setTonemap()`:
+
+| | Before | After |
 |---|---|---|
-| ffmpeg CPU | 36% | **518%** |
-| Production rate | ~2.2x realtime | **~1.5x** |
+| ffmpeg CPU | 518% | **182%** |
+| Throughput (offline, unthrottled) | 1.97x realtime | **4.95x** |
+| Live production rate | 1.50x | 1.80x (now near the `readrate 2` ceiling, no longer CPU-bound) |
 
-The cost is the software `zscale` + `tonemap` chain running on every frame, not
-the higher bitrate. It cannot reach its configured `readrate 2` because it is
-CPU-bound, though 1.5x still builds buffer steadily and does not starve.
+Quality cost is negligible: **VMAF 97.26** between the two orderings, where >95
+is visually indistinguishable. Scaling PQ-encoded samples is theoretically less
+correct than linearising first, but the measured difference does not justify
+quadrupling the cost.
 
-!!! warning "One tonemapped channel at a time"
-    Two concurrent tonemapped 4K channels would need roughly 1037% of the
-    machine's 1200%, pushing production below 1.0x — real, repeated stuttering
-    rather than a one-off blip. Normal channels are unaffected and can run
-    alongside.
-
-The thinner margin is also why the playlist-exhaustion stall below showed as an
-actual half-second skip on Nature channels, where other channels only flashed a
-buffering indicator.
+This also removed the practical one-tonemapped-channel-at-a-time limit — at 182%
+rather than 518%, several can run concurrently.
 
 ## Playlist exhaustion at startup
 
