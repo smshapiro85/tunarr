@@ -487,6 +487,7 @@ export class FfmpegStreamFactory {
         duration,
         ptsOffset,
         isFirstTranscode,
+        readRate: this.settingsDB.systemSettings().streaming?.transcodeReadRate,
         episodeOverlay: this.buildProgramOverlay(
           lineupItem,
           isFirstTranscode ?? false,

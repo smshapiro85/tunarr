@@ -10445,6 +10445,7 @@ export type GetApiSystemSettingsResponses = {
             readinessTimeoutMs: number;
             episodeOverlayEnabled: boolean;
             episodeOverlaySeconds: number;
+            transcodeReadRate: number;
         };
         dataDirectory: string;
         searchServerAddress: string;
@@ -10518,6 +10519,7 @@ export type PutApiSystemSettingsData = {
             readinessTimeoutMs?: number;
             episodeOverlayEnabled?: boolean;
             episodeOverlaySeconds?: number;
+            transcodeReadRate?: number;
         };
     };
     path?: never;
@@ -10595,6 +10597,7 @@ export type PutApiSystemSettingsResponses = {
             readinessTimeoutMs: number;
             episodeOverlayEnabled: boolean;
             episodeOverlaySeconds: number;
+            transcodeReadRate: number;
         };
         dataDirectory: string;
         searchServerAddress: string;

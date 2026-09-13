@@ -226,6 +226,48 @@ Tunarr never sets) looked promising and **did not help**. Against an unbounded
 default that repeated at 718 ms, bounded runs measured 707–730 ms — inside the
 noise. Not adopted.
 
+## Rebuffering: `-readrate 1` does not sustain 1x
+
+Reported as buffering on a wired Apple TV with a 3-second client buffer. The
+first instinct — raising `videoBufferSize` — is the wrong lever: that is
+`-bufsize:v`, the VBV rate-control buffer, which constrains how much the
+*encoder's* bitrate may fluctuate. It has nothing to do with playback.
+
+Measuring actual media produced (summing `EXTINF`, not counting files) against
+wall clock showed the transcode running at **0.5–0.78x** after the initial
+burst. At 48s of wall clock the client needed 48s of media and only 36s
+existed — a 12-second starvation.
+
+Reproduced outside Tunarr with the same arguments, 45s per run:
+
+| `-readrate` | Achieved | Worst margin vs 1x playback |
+|---|---|---|
+| 1 | 0.78x | **-10s (starves)** |
+| 1.5 | 1.02x | +1s |
+| 2 | 1.11x | +5s |
+
+ffmpeg's `-readrate 1` simply does not hold 1x in this pipeline. This was always
+true, but `hls_time 4` with a 2-segment gate handed the client ~8s of cushion up
+front, which masked the drift. Cutting the segment gate to ~1s for fast startup
+removed the cushion and exposed it.
+
+`transcodeReadRate` (default 2) makes the rate configurable. Verified live: the
+margin holds at +5 to +7s for the whole run instead of going negative.
+
+### Ruled out along the way
+
+- **The episode overlay.** Suspected first, since drawtext runs per frame. It
+  costs nothing measurable: 13.20x vs 13.25x realtime with and without.
+- **Keyframe cadence.** Forcing a keyframe every second (`-g 24`) versus every
+  four (`-g 96`) made no difference: 7.99x vs 8.08x.
+- **Encoder capacity.** The ceiling is ~8–13x realtime for a 1080p source, far
+  above what is needed.
+
+!!! warning "Count media, not files"
+    An early pass counted `.ts` files and assumed one file per second, which
+    produced a bogus picture during session rollovers. Sum `EXTINF` from the
+    playlist instead.
+
 ## Client-side latency
 
 Server-side is ~1–2 s, but the Apple TV shows 3–5 s. The remainder is iPlayTV,

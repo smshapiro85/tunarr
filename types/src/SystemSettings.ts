@@ -102,6 +102,16 @@ export const StreamingTuningSettingsSchema = z.object({
   episodeOverlayEnabled: z.boolean().default(true),
   /** How long the overlay stays up, including its fade-out. */
   episodeOverlaySeconds: z.number().min(1).max(60).default(5),
+  /**
+   * Input read rate for the steady-state transcode, as a multiple of real time.
+   *
+   * ffmpeg's `-readrate 1` does not actually sustain 1x here -- measured at
+   * ~0.78x, so the stream falls behind a client playing at 1x and the player
+   * rebuffers. Anything above 1 restores real-time parity with margin; Tunarr
+   * stops building buffer on its own once it is far enough ahead, so this does
+   * not run away from the wall clock.
+   */
+  transcodeReadRate: z.number().min(1).max(8).default(2),
 });
 
 export type StreamingTuningSettings = z.infer<
@@ -118,6 +128,7 @@ export const DefaultStreamingTuningSettings = {
   readinessTimeoutMs: 15_000,
   episodeOverlayEnabled: true,
   episodeOverlaySeconds: 5,
+  transcodeReadRate: 2,
 } satisfies StreamingTuningSettings;
 
 export const SystemSettingsSchema = z.object({

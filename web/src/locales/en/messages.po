@@ -748,7 +748,7 @@ msgstr "Break Positioning"
 #~ msgid "Briefly shows \"Season 3 - Episode 8\" and the episode title in the lower-right corner, then fades out. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program. Episodes only — movies and music are skipped."
 #~ msgstr "Briefly shows \"Season 3 - Episode 8\" and the episode title in the lower-right corner, then fades out. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program. Episodes only — movies and music are skipped."
 
-#: src/pages/settings/MichaelSettingsPage.tsx:202
+#: src/pages/settings/MichaelSettingsPage.tsx:216
 msgid "Briefly shows what is playing in the lower-right corner, then fades out. Episodes show \"Season 3 - Episode 8\" above the episode title; movies show the title and year; music shows the track and artist. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program."
 msgstr "Briefly shows what is playing in the lower-right corner, then fades out. Episodes show \"Season 3 - Episode 8\" above the episode title; movies show the title and year; music shows the track and artist. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program."
 
@@ -2087,6 +2087,10 @@ msgstr "HLS Direct Output Format"
 msgid "HLS not supported in this browser!"
 msgstr "HLS not supported in this browser!"
 
+#: src/pages/settings/MichaelSettingsPage.tsx:178
+msgid "How fast the transcode reads ahead once running. ffmpeg's \"1x\" actually measures about 0.78x here, so 1 lets a player outrun the stream and rebuffer. Raise this if you see buffering. Upstream: 1."
+msgstr "How fast the transcode reads ahead once running. ffmpeg's \"1x\" actually measures about 0.78x here, so 1 lets a player outrun the stream and rebuffer. Raise this if you see buffering. Upstream: 1."
+
 #: src/pages/settings/ScannerSettingsPage.tsx:73
 msgid "How frequently libraries should be scanned (starting from midnight)."
 msgstr "How frequently libraries should be scanned (starting from midnight)."
@@ -2275,7 +2279,7 @@ msgstr "Lazy"
 msgid "Leave blank to use the channel's icon."
 msgstr "Leave blank to use the channel's icon."
 
-#: src/pages/settings/MichaelSettingsPage.tsx:177
+#: src/pages/settings/MichaelSettingsPage.tsx:191
 msgid "Length of each HLS segment. Shorter starts faster but makes more files and more keyframes, which costs bitrate. Upstream: 4."
 msgstr "Length of each HLS segment. Shorter starts faster but makes more files and more keyframes, which costs bitrate. Upstream: 4."
 
@@ -2877,7 +2881,7 @@ msgstr "Output video at a constant frame rate."
 msgid "Overflow Behavior"
 msgstr "Overflow Behavior"
 
-#: src/pages/settings/MichaelSettingsPage.tsx:221
+#: src/pages/settings/MichaelSettingsPage.tsx:235
 msgid "Overlay duration (seconds)"
 msgstr "Overlay duration (seconds)"
 
@@ -3037,7 +3041,7 @@ msgstr "Program Count"
 msgid "Program JSON"
 msgstr "Program JSON"
 
-#: src/pages/settings/MichaelSettingsPage.tsx:186
+#: src/pages/settings/MichaelSettingsPage.tsx:200
 msgid "Program Overlay"
 msgstr "Program Overlay"
 
@@ -3293,7 +3297,7 @@ msgstr "Rescan Interval (hours)"
 #: src/components/channel_config/ChannelProgrammingConfig.tsx:233
 #: src/components/custom-shows/EditCustomShowForm.tsx:435
 #: src/components/filler/EditFillerListForm.tsx:172
-#: src/pages/settings/MichaelSettingsPage.tsx:236
+#: src/pages/settings/MichaelSettingsPage.tsx:250
 msgid "Reset"
 msgstr "Reset"
 
@@ -3416,7 +3420,7 @@ msgstr "Sample rate cannot be changed when copying input audio"
 #: src/pages/settings/FeaturesSettingsPage.tsx:170
 #: src/pages/settings/FfmpegSettingsPage.tsx:428
 #: src/pages/settings/HdhrSettingsPage.tsx:152
-#: src/pages/settings/MichaelSettingsPage.tsx:243
+#: src/pages/settings/MichaelSettingsPage.tsx:257
 #: src/pages/settings/ScannerSettingsPage.tsx:82
 #: src/pages/settings/XmlTvSettingsPage.tsx:222
 msgid "Save"
@@ -3492,7 +3496,7 @@ msgstr "Search…"
 msgid "Seasons"
 msgstr "Seasons"
 
-#: src/pages/settings/MichaelSettingsPage.tsx:176
+#: src/pages/settings/MichaelSettingsPage.tsx:190
 msgid "Segment duration (seconds)"
 msgstr "Segment duration (seconds)"
 
@@ -3613,7 +3617,7 @@ msgstr "Show Advanced"
 msgid "Show Stealth"
 msgstr "Show Stealth"
 
-#: src/pages/settings/MichaelSettingsPage.tsx:199
+#: src/pages/settings/MichaelSettingsPage.tsx:213
 msgid "Show what's playing when a channel starts"
 msgstr "Show what's playing when a channel starts"
 
@@ -4137,7 +4141,7 @@ msgstr "Total hits: {0}"
 msgid "Total Runtime"
 msgstr "Total Runtime"
 
-#: src/pages/settings/MichaelSettingsPage.tsx:222
+#: src/pages/settings/MichaelSettingsPage.tsx:236
 msgid "Total time on screen, including a 0.75s fade-out at the end."
 msgstr "Total time on screen, including a 0.75s fade-out at the end."
 
@@ -4159,6 +4163,10 @@ msgstr "Transcode Config (optional override)"
 #: src/components/channels/ChannelSummaryQuickStats.tsx:118
 msgid "Transcode Config <0> <1/></0>"
 msgstr "Transcode Config <0> <1/></0>"
+
+#: src/pages/settings/MichaelSettingsPage.tsx:177
+msgid "Transcode read rate (x real time)"
+msgstr "Transcode read rate (x real time)"
 
 #: src/pages/settings/FfmpegSettingsPage.tsx:434
 msgid "Transcoding Configs"

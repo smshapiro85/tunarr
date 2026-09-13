@@ -169,6 +169,20 @@ export default function MichaelSettingsPage() {
         <Grid size={1}>
           <NumericFormControllerText
             control={control}
+            name="transcodeReadRate"
+            float
+            rules={{ min: 1, max: 8 }}
+            TextFieldProps={{
+              fullWidth: true,
+              label: t`Transcode read rate (x real time)`,
+              helperText: t`How fast the transcode reads ahead once running. ffmpeg's "1x" actually measures about 0.78x here, so 1 lets a player outrun the stream and rebuffer. Raise this if you see buffering. Upstream: 1.`,
+            }}
+          />
+        </Grid>
+
+        <Grid size={1}>
+          <NumericFormControllerText
+            control={control}
             name="hlsSegmentSeconds"
             rules={{ min: 1, max: 10 }}
             TextFieldProps={{

@@ -912,9 +912,13 @@ export abstract class BasePipelineBuilder implements PipelineBuilder {
 
   protected setRealtime() {
     const initialBurst = this.desiredState.realtime ? 0 : 60;
+    // `-readrate 1` measures ~0.78x in this pipeline rather than the 1x it
+    // claims, so a client playing at 1x outruns the transcode and rebuffers.
+    // The rate is configurable for that reason; see StreamingTuningSettings.
     const option = new ReadrateInputOption(
       this.ffmpegCapabilities,
       initialBurst,
+      this.ffmpegState.readRate,
     );
     this.audioInputSource?.addOption(option);
     this.videoInputSource.addOption(option);

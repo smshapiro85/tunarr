@@ -22,6 +22,7 @@ reachable only through an environment variable.
 | `readinessTimeoutMs` | 15,000 (implied) | 15,000 | Total wait before failing the request. |
 | `episodeOverlayEnabled` | *did not exist* | true | Show season/episode briefly when a channel starts. |
 | `episodeOverlaySeconds` | *did not exist* | 5 | How long it stays up, fade included. |
+| `transcodeReadRate` | 1 (hardcoded) | 2 | Input read rate as a multiple of real time. |
 
 Changes apply to the next stream that starts. No restart required.
 

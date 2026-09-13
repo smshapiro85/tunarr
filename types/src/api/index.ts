@@ -308,6 +308,7 @@ export const UpdateSystemSettingsRequestSchema = z.object({
       readinessTimeoutMs: z.number().int().min(1_000).max(120_000).optional(),
       episodeOverlayEnabled: z.boolean().optional(),
       episodeOverlaySeconds: z.number().min(1).max(60).optional(),
+      transcodeReadRate: z.number().min(1).max(8).optional(),
     })
     .optional(),
 });

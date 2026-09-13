@@ -93,6 +93,8 @@ export class FfmpegState {
    * for deciding whether to include `discont_start` in the ffmpeg HLS flags.
    */
   isFirstTranscode?: boolean;
+  /** Input read rate as a multiple of real time. See StreamingTuningSettings. */
+  readRate?: number;
   /**
    * Lines to show briefly in the lower-right corner when a channel starts.
    * Set only for the first transcode of a session, so it does not reappear
