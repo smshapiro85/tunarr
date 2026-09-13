@@ -268,6 +268,21 @@ margin holds at +5 to +7s for the whole run instead of going negative.
     produced a bogus picture during session rollovers. Sum `EXTINF` from the
     playlist instead.
 
+## Segment duration: startup vs buffer depth
+
+`hlsSegmentSeconds` trades the two directly, because a player holding N
+segments holds N x that many seconds of video. Measured on this deployment:
+
+| Segment length | Cold start | Steady-state margin vs 1x playback | 3-segment client holds |
+|---|---|---|---|
+| 1s | ~0.75 s | +5 to +7 s | 3 s |
+| 2s | ~1.0–1.25 s | **+14 to +22 s, growing** | 6 s |
+
+1s was chosen first while chasing sub-second startup, and it does achieve that.
+It also leaves almost no cushion, which is what surfaced the `-readrate`
+shortfall above as audible rebuffering. 2s is the better operating point here:
+roughly 350ms of startup buys several times the margin.
+
 ## Client-side latency
 
 Server-side is ~1–2 s, but the Apple TV shows 3–5 s. The remainder is iPlayTV,

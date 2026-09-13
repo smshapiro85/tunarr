@@ -86,8 +86,14 @@ export const StreamingTuningSettingsSchema = z.object({
   sessionCleanupDelaySeconds: z.number().int().min(0).max(3600).default(10),
   /** Segments that must exist before the playlist is served. Upstream: 2. */
   initialSegmentCount: z.number().int().min(1).max(10).default(1),
-  /** HLS segment duration in seconds. Upstream: 4. */
-  hlsSegmentSeconds: z.number().int().min(1).max(10).default(1),
+  /**
+   * HLS segment duration in seconds. Upstream: 4.
+   *
+   * Trades startup against buffer depth: a player holding N segments holds
+   * N x this many seconds. 1 gives the fastest start but leaves a typical
+   * 3-segment client with only 3s of cushion, which rebuffers on any hiccup.
+   */
+  hlsSegmentSeconds: z.number().int().min(1).max(10).default(2),
   /**
    * How often to re-check whether the stream is ready to serve. Upstream polls
    * on a fixed 1s tick, which quantizes response time to whole seconds.
@@ -123,7 +129,7 @@ export const DefaultStreamingTuningSettings = {
   sessionStalenessMs: 30_000,
   sessionCleanupDelaySeconds: 10,
   initialSegmentCount: 1,
-  hlsSegmentSeconds: 1,
+  hlsSegmentSeconds: 2,
   readinessPollMs: 100,
   readinessTimeoutMs: 15_000,
   episodeOverlayEnabled: true,
