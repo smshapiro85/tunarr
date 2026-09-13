@@ -30,21 +30,43 @@ export class ProgramOverlayFilter extends FilterOption {
   }
 
   /**
-   * drawtext parses `:` as an option separator and `'` as a quote, and neither
-   * survives being escaped reliably across shell-free argv passing. Episode
-   * titles routinely contain both, so substitute rather than escape:
-   * a typographic apostrophe renders identically, and `:` becomes a dash.
+   * Makes arbitrary text safe inside a drawtext option value.
+   *
+   * Each character here was verified by RENDERING, not just by checking that
+   * the filter graph parses — several forms parse successfully and then
+   * silently swallow the remaining options into the text:
+   *
+   *   `,` `;` `[` `]`  backslash escape works
+   *   `:`              escaping fails to parse; replaced with " -"
+   *   `'`              escaping renders nothing (ffmpeg reads it as an opening
+   *                    quote and consumes the rest); replaced with U+2019,
+   *                    which is visually identical
+   *   `%`              left alone; `expansion=none` on the filter makes it
+   *                    literal instead of a strftime/expansion token
+   *   `\`              removed; it cannot be escaped reliably here and
+   *                    interacts with every other escape
+   *
+   * Without this a title like "Make Love, Not Warcraft" terminates the drawtext
+   * filter early and breaks the whole graph, which drops the channel to the
+   * error screen. 257 episode titles in the source library contain such
+   * characters.
    */
   private static sanitize(text: string): string {
-    return text
-      .replace(/\\/g, '')
-      .replace(/%/g, '')
-      .replace(/'/g, '’')
-      .replace(/:/g, ' -')
-      .replace(/\s+/g, ' ')
-      .trim()
-      .slice(0, 64);
+    // Transform the two characters that are supported but cannot be escaped.
+    let out = text.replace(/'/g, '’').replace(/:/g, ' -');
+
+    // Allowlist: keep letters, marks and digits in any script, whitespace, and
+    // the punctuation below. Everything else — including any character not
+    // considered here — is dropped rather than trusted, so an unexpected
+    // character can never reach the filter graph.
+    out = out.replace(/[^\p{L}\p{M}\p{N}\s,;[\]().!?&#@+*/%"’-]/gu, '');
+
+    // Escape the ones drawtext would otherwise treat as syntax.
+    out = out.replace(/([,;[\]])/g, '\\$1');
+
+    return out.replace(/\s+/g, ' ').trim().slice(0, 64);
   }
+
 
   get filter() {
     const lines = this.lines
@@ -83,6 +105,8 @@ export class ProgramOverlayFilter extends FilterOption {
         offset += fontsize + gap;
         return [
           `drawtext=fontfile=${this.fontFile}`,
+          // Make % and {} literal rather than expansion tokens.
+          `expansion=none`,
           `text=${text}`,
           `fontsize=${fontsize}`,
           `fontcolor=white`,
