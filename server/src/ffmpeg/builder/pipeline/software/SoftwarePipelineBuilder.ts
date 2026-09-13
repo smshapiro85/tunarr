@@ -7,7 +7,7 @@ import { DeinterlaceFilter } from '@/ffmpeg/builder/filter/DeinterlaceFilter.js'
 import type { FilterOption } from '@/ffmpeg/builder/filter/FilterOption.js';
 import { PadFilter } from '@/ffmpeg/builder/filter/PadFilter.js';
 import { ScaleFilter } from '@/ffmpeg/builder/filter/ScaleFilter.js';
-import { isHdrContent } from '@/ffmpeg/builder/filter/HdrDetection.js';
+import { needsColorConversion } from '@/ffmpeg/builder/filter/HdrDetection.js';
 import { TonemapFilter } from '@/ffmpeg/builder/filter/TonemapFilter.js';
 import { OverlayWatermarkFilter } from '@/ffmpeg/builder/filter/watermark/OverlayWatermarkFilter.js';
 import { ColorFormat } from '@/ffmpeg/builder/format/ColorFormat.js';
@@ -285,7 +285,7 @@ export class SoftwarePipelineBuilder extends BasePipelineBuilder {
     const { videoStream } = this.context;
     if (
       !this.featureFlagService.get('tonemapEnabled') ||
-      !isHdrContent(videoStream)
+      !needsColorConversion(videoStream)
     ) {
       return currentState;
     }
