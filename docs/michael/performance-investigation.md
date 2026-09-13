@@ -312,6 +312,53 @@ The cap existed because concurrency used to cost a great deal — 2s alone versu
 media. With a ~2s gate the contention is minor, so a tight cap buys nothing and
 every eviction is another chance to hit the cleanup race. Default raised to 10.
 
+## Second optimisation round (external review)
+
+A second opinion from another model, given the measured history, produced one
+adopted change and two rejected ones.
+
+**Adopted — `initialSegmentCount` 1 → 2.** libVLC 3.0.4 schedules playlist
+refreshes on whole-second arithmetic (roughly
+`nextUpdate = floor(now) + TARGETDURATION - 1`), so a playlist listing a single
+segment leaves the client idle until its next refresh tick. Serving two costs
+about 100ms on the server and measured faster to first frame:
+
+| `initialSegmentCount` | Server playlist | Time to first frame |
+|---|---|---|
+| 1 | 1.23 s | 1.58 s |
+| **2** | **1.33 s** | **1.38 s** |
+| 3 | 1.84 s | 1.59 s |
+
+A slower playlist response producing an earlier picture is the whole point —
+optimise time to first frame, not time to playlist.
+
+**Rejected — true MPEG-TS transport.** Ranked first by the reviewer, on the
+theory that plain TS avoids segment completion and playlist refresh entirely.
+It is broken in this build: `?streamMode=mpegts` runs a concat-demuxer session
+that exits with code 183 and serves zero bytes. Note `.ts` inherits the
+channel's stream mode unless overridden, so a naive `.ts` test silently measures
+HLS-over-concat instead.
+
+**Rejected — VideoToolbox low-delay flags.** Measured worse, not better:
+
+| Flags | Time to 2 segments |
+|---|---|
+| baseline | 1.436 s |
+| `-bf:v 0` | 1.435 s |
+| `+low_delay` | 2.411 s |
+| `+ -realtime:v 1` | 2.057 s |
+
+`-bf:v 0` changes nothing because VideoToolbox emits no B-frames here anyway.
+
+**Also ruled out for this client**, from reading the 3.0.4 parser: `EXT-X-START`,
+Apple LL-HLS part/preload tags, and `EXT-X-PLAYLIST-TYPE` are all unhandled and
+offer no startup shortcut. `-hls_init_time` cannot produce a short first segment
+while `append_list` is in use.
+
+End-to-end time to first frame now measures 1.6–2.6 s (median ~2.0 s), against
+~1.1–1.9 s to serve the playlist. Run-to-run variance is significant; treat
+single measurements sceptically.
+
 ## Client-side latency
 
 Server-side is ~1–2 s, but the Apple TV shows 3–5 s. The remainder is iPlayTV,

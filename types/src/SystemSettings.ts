@@ -93,8 +93,15 @@ export const StreamingTuningSettingsSchema = z.object({
   sessionStalenessMs: z.number().int().min(1000).max(3_600_000).default(30_000),
   /** Grace period between a session losing its last viewer and teardown. */
   sessionCleanupDelaySeconds: z.number().int().min(0).max(3600).default(10),
-  /** Segments that must exist before the playlist is served. Upstream: 2. */
-  initialSegmentCount: z.number().int().min(1).max(10).default(1),
+  /**
+   * Segments that must exist before the playlist is served. Upstream: 2.
+   *
+   * Counter-intuitively, 1 is not fastest end to end. libVLC 3.0.4 schedules
+   * its playlist refresh on whole-second arithmetic, so a playlist listing a
+   * single segment leaves the client idle until its next refresh tick. Serving
+   * 2 costs ~100ms on the server and measured faster to first frame.
+   */
+  initialSegmentCount: z.number().int().min(1).max(10).default(2),
   /**
    * HLS segment duration in seconds. Upstream: 4.
    *
@@ -137,7 +144,7 @@ export const DefaultStreamingTuningSettings = {
   maxConcurrentSessions: 10,
   sessionStalenessMs: 30_000,
   sessionCleanupDelaySeconds: 10,
-  initialSegmentCount: 1,
+  initialSegmentCount: 2,
   hlsSegmentSeconds: 2,
   readinessPollMs: 100,
   readinessTimeoutMs: 15_000,
