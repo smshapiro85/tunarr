@@ -22,6 +22,9 @@ type MutateOptions = {
   endWithDiscontinuity: boolean;
   targetDuration: number;
   previousDiscontinuitySequence?: number;
+  // Publish only segments starting at or before this time, so the playlist
+  // grows with the clock instead of with each client's downloads.
+  publishUntil?: Dayjs;
 };
 
 type FilterBeforeDate = {
@@ -61,6 +64,7 @@ export class HlsPlaylistMutator {
       opts.maxSegmentsToKeep,
       opts.targetDuration,
       opts.previousDiscontinuitySequence,
+      opts.publishUntil,
     );
 
     return {
@@ -131,6 +135,7 @@ export class HlsPlaylistMutator {
     maxSegmentsToKeep: number,
     targetDuration: number,
     previousDiscontinuitySequence?: number,
+    publishUntil?: Dayjs,
   ) {
     // Count and remove leading discontinuities
     let leadingDiscontinuities = 0;
@@ -145,6 +150,14 @@ export class HlsPlaylistMutator {
       items,
       (item): item is PlaylistSegment => item.type === 'segment',
     );
+
+    if (publishUntil) {
+      const due = reject(allSegments, (segment) =>
+        segment.startTime.isAfter(publishUntil),
+      );
+      // A live playlist with no segments is unplayable.
+      allSegments = isEmpty(due) ? take(allSegments, 1) : due;
+    }
 
     if (allSegments.length > maxSegmentsToKeep) {
       const filtered = match(filterOptions)
@@ -179,10 +192,22 @@ export class HlsPlaylistMutator {
         )
         .exhaustive();
 
-      allSegments =
-        filtered.length >= maxSegmentsToKeep
-          ? take(filtered, maxSegmentsToKeep)
-          : takeRight(allSegments, maxSegmentsToKeep);
+      if (publishUntil) {
+        // Both candidates end at the publish edge; keep whichever reaches
+        // further back, so the slowest client's segments stay listed. Taking
+        // the first N from the client instead would pin the playlist's end to
+        // that client's downloads, and the playlist would stop changing
+        // whenever it paused -- which Apple's player treats as a dead stream.
+        allSegments =
+          filtered.length > maxSegmentsToKeep
+            ? filtered
+            : takeRight(allSegments, maxSegmentsToKeep);
+      } else {
+        allSegments =
+          filtered.length >= maxSegmentsToKeep
+            ? take(filtered, maxSegmentsToKeep)
+            : takeRight(allSegments, maxSegmentsToKeep);
+      }
     }
 
     const startSequence = first(allSegments)?.startSequence ?? 0;
@@ -250,7 +275,10 @@ export class HlsPlaylistMutator {
           const nextIsSelected =
             next?.type === 'segment' &&
             allSegments.some((seg) => seg.equals(next));
-          if (i === items.length - 1 || nextIsSelected) {
+          // A paced playlist usually ends before the raw one, so a DISC at the
+          // raw end belongs to segments not yet published. Emit it only with
+          // the segment it introduces.
+          if (nextIsSelected || (!publishUntil && i === items.length - 1)) {
             lines.push('#EXT-X-DISCONTINUITY');
           }
           break;

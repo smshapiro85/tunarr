@@ -192,6 +192,42 @@ export default function MichaelSettingsPage() {
             }}
           />
         </Grid>
+
+        <Grid size={1}>
+          <FormControl fullWidth>
+            <FormControlLabel
+              control={
+                <CheckboxFormController
+                  control={control}
+                  name="livePlaylistPacing"
+                />
+              }
+              label={t`Pace the live playlist to the clock`}
+            />
+            <FormHelperText>
+              <Trans>
+                Adds one segment to the playlist per segment duration, like
+                broadcast TV, however far ahead the transcode runs. Off, a
+                player that buffers ahead sees its playlist stop updating when
+                the transcode idles between programs &mdash; Apple TV treats
+                that as a dead stream and freezes. Upstream has no pacing.
+              </Trans>
+            </FormHelperText>
+          </FormControl>
+        </Grid>
+
+        <Grid size={1}>
+          <NumericFormControllerText
+            control={control}
+            name="livePlaylistLeadSeconds"
+            rules={{ min: 0, max: 300 }}
+            TextFieldProps={{
+              fullWidth: true,
+              label: t`Paced playlist lead (seconds)`,
+              helperText: t`How far past the clock the paced playlist reaches — the most a player can buffer ahead. Never less than segments before playback × segment duration.`,
+            }}
+          />
+        </Grid>
       </Grid>
 
       <Divider sx={{ my: 3 }} />

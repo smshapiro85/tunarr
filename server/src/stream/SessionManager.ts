@@ -262,6 +262,7 @@ export class SessionManager {
             this.settingsDB.ffmpegSettings().transcodeDirectory,
           streamMode: options?.streamMode ?? 'hls',
           stalenessMs: this.sessionStalenessMs(),
+          livePlaylistLeadMs: this.livePlaylistLeadMs(),
           ...options,
         }),
     );
@@ -289,6 +290,25 @@ export class SessionManager {
       getNumericEnvVar(TUNARR_ENV_VARS.SESSION_STALENESS_MS) ??
       this.streamingTuning().sessionStalenessMs
     );
+  }
+
+  /**
+   * Undefined when pacing is off. The stored settings are not schema-parsed,
+   * so keys added after the file was written come back undefined and fall
+   * back to the defaults here.
+   */
+  private livePlaylistLeadMs(): number | undefined {
+    const tuning = this.streamingTuning();
+    const defaults = DefaultStreamingTuningSettings;
+    if (!(tuning.livePlaylistPacing ?? defaults.livePlaylistPacing)) {
+      return;
+    }
+    const gateSeconds =
+      (tuning.initialSegmentCount ?? defaults.initialSegmentCount) *
+      (tuning.hlsSegmentSeconds ?? defaults.hlsSegmentSeconds);
+    const leadSeconds =
+      tuning.livePlaylistLeadSeconds ?? defaults.livePlaylistLeadSeconds;
+    return Math.max(leadSeconds, gateSeconds) * 1000;
   }
 
   /**

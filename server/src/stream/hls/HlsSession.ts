@@ -46,6 +46,9 @@ export type HlsSlowerSessionProvider = (
 
 export interface HlsSessionOptions extends BaseHlsSessionOptions {
   streamMode: 'hls' | 'hls_direct_v2';
+  // When set, the served playlist lists segments only up to this far past
+  // the wall clock. Unset keeps the playlist's end tied to client downloads.
+  livePlaylistLeadMs?: number;
 }
 
 /**
@@ -119,6 +122,7 @@ export class HlsSession extends BaseHlsSession<HlsSessionOptions> {
       segmentsToKeepBefore: 10,
       // segmentFloor: this.#highestDeletedBelow,
     };
+    const leadMs = this.sessionOptions.livePlaylistLeadMs;
     return Result.attemptAsync(async () => {
       return await this.lock.runExclusive(async () => {
         const playlistLines = await this.readPlaylist();
@@ -132,6 +136,8 @@ export class HlsSession extends BaseHlsSession<HlsSessionOptions> {
               targetDuration: this.getHlsOptions().hlsTime,
               previousDiscontinuitySequence: this.#lastDiscontinuitySequence,
               endWithDiscontinuity: false,
+              publishUntil:
+                leadMs !== undefined ? dayjs().add(leadMs, 'ms') : undefined,
             },
           );
           this.#lastDiscontinuitySequence = trimResult.discontinuitySequence;

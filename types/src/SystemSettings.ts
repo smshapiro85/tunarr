@@ -130,11 +130,32 @@ export const StreamingTuningSettingsSchema = z.object({
    *
    * ffmpeg's `-readrate 1` does not actually sustain 1x here -- measured at
    * ~0.78x, so the stream falls behind a client playing at 1x and the player
-   * rebuffers. Anything above 1 restores real-time parity with margin; Tunarr
-   * stops building buffer on its own once it is far enough ahead, so this does
-   * not run away from the wall clock.
+   * rebuffers. Anything above 1 restores real-time parity with margin. The
+   * transcoder then finishes each program early and idles until the next is
+   * due; with livePlaylistPacing on, clients never see that lead or the idle
+   * gaps. With pacing off, a client can buffer into the lead and then finds
+   * its playlist frozen during the gaps.
    */
   transcodeReadRate: z.number().min(1).max(8).default(2),
+  /**
+   * Publish the live playlist in step with the wall clock -- one segment per
+   * segment duration, like broadcast live HLS -- rather than letting each
+   * client's downloads decide where it ends.
+   *
+   * Off, the playlist only changes when the client fetches a segment or the
+   * transcoder produces one while the client is caught up. A client that
+   * buffers ahead then sees it stop changing whenever it pauses downloading or
+   * the transcoder idles between programs, and Apple's player gives up on a
+   * live playlist that doesn't change within about 1.5 segment durations.
+   */
+  livePlaylistPacing: z.boolean().default(true),
+  /**
+   * How far past the wall clock the paced playlist reaches, i.e. the most a
+   * client can buffer ahead. Never less than initialSegmentCount x
+   * hlsSegmentSeconds, so the segments the startup gate waited for are
+   * published when the client arrives.
+   */
+  livePlaylistLeadSeconds: z.number().min(0).max(300).default(12),
   /**
    * Prefix EPG descriptions for episodes with season, episode number and
    * episode title, e.g. `Season 3 Episode 6 "Mystery of Panama" - <description>`.
@@ -160,6 +181,8 @@ export const DefaultStreamingTuningSettings = {
   episodeOverlayEnabled: true,
   episodeOverlaySeconds: 5,
   transcodeReadRate: 2,
+  livePlaylistPacing: true,
+  livePlaylistLeadSeconds: 12,
   epgEpisodePrefix: true,
 } satisfies StreamingTuningSettings;
 

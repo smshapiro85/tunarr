@@ -10454,6 +10454,8 @@ export type GetApiSystemSettingsResponses = {
             episodeOverlayEnabled: boolean;
             episodeOverlaySeconds: number;
             transcodeReadRate: number;
+            livePlaylistPacing: boolean;
+            livePlaylistLeadSeconds: number;
             epgEpisodePrefix: boolean;
         };
         dataDirectory: string;
@@ -10529,6 +10531,8 @@ export type PutApiSystemSettingsData = {
             episodeOverlayEnabled?: boolean;
             episodeOverlaySeconds?: number;
             transcodeReadRate?: number;
+            livePlaylistPacing?: boolean;
+            livePlaylistLeadSeconds?: number;
             epgEpisodePrefix?: boolean;
         };
     };
@@ -10608,6 +10612,8 @@ export type PutApiSystemSettingsResponses = {
             episodeOverlayEnabled: boolean;
             episodeOverlaySeconds: number;
             transcodeReadRate: number;
+            livePlaylistPacing: boolean;
+            livePlaylistLeadSeconds: number;
             epgEpisodePrefix: boolean;
         };
         dataDirectory: string;

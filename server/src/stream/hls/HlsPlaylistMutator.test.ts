@@ -1,4 +1,6 @@
+import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
+import { last, range } from 'lodash-es';
 import { describe, expect, it } from 'vitest';
 import { readTestFile } from '../../testing/util.ts';
 import { HlsPlaylistMutator } from './HlsPlaylistMutator.ts';
@@ -1025,6 +1027,107 @@ describe('HlsPlaylistMutator', () => {
   //     expect(result.segmentCount).toBe(20);
   //   });
   // });
+
+  describe('live playlist pacing (publishUntil)', () => {
+    const start = dayjs('2024-10-18T14:00:00.000-0400');
+    const opts = { ...defaultOpts, maxSegmentsToKeep: 20 };
+    // Segment k starts at k * 4.004s; `at(k)` is after segment k is due and
+    // before segment k + 1 is.
+    const at = (k: number) => start.add(k * 4.004 + 1, 'seconds');
+
+    const clientAt = (segmentNumber: number) =>
+      ({
+        type: 'before_segment_number',
+        segmentNumber,
+        segmentsToKeepBefore: 10,
+      }) as const;
+
+    function paced(
+      lastRequested: number,
+      publishUntil: Dayjs,
+      lines = createPlaylist(60),
+    ) {
+      return mutator.trimPlaylist(start, clientAt(lastRequested), lines, {
+        ...opts,
+        publishUntil,
+      });
+    }
+
+    function segmentsIn(playlist: string): number[] {
+      return [...playlist.matchAll(/data(\d{6})\.ts/g)].map((m) =>
+        parseInt(m[1]!),
+      );
+    }
+
+    function discTags(playlist: string): number {
+      return playlist.split('\n').filter((l) => l === '#EXT-X-DISCONTINUITY')
+        .length;
+    }
+
+    it('lists only segments that are due', () => {
+      expect(segmentsIn(paced(0, at(10)).playlist)).toEqual(range(0, 11));
+    });
+
+    it('ends at the clock rather than at the client', () => {
+      // 60 segments exist and the client last fetched segment 30.
+      const unpaced = mutator.trimPlaylist(
+        start,
+        clientAt(30),
+        createPlaylist(60),
+        opts,
+      );
+      expect(last(segmentsIn(unpaced.playlist))).toBe(39);
+      expect(last(segmentsIn(paced(30, at(50)).playlist))).toBe(50);
+    });
+
+    it('gains a segment as time passes even when the client fetches nothing', () => {
+      // Unpaced, the same client position always yields the same playlist, so
+      // a client that stops downloading sees it frozen.
+      const before = segmentsIn(paced(30, at(45)).playlist);
+      const after = segmentsIn(paced(30, at(46)).playlist);
+      expect(after).toEqual([...before, 46]);
+    });
+
+    it('reaches back to cover a client far behind the edge', () => {
+      // 40 segments behind: its next segment must still be listed.
+      expect(segmentsIn(paced(12, at(52)).playlist)).toEqual(range(2, 53));
+    });
+
+    it('keeps the last maxSegmentsToKeep when the client is near the edge', () => {
+      const result = paced(50, at(52));
+      expect(segmentsIn(result.playlist)).toEqual(range(33, 53));
+      expect(result.sequence).toBe(33);
+    });
+
+    it('never serves an empty playlist', () => {
+      const result = paced(0, start.subtract(10, 'seconds'));
+      expect(segmentsIn(result.playlist)).toEqual([0]);
+    });
+
+    it('holds back a trailing discontinuity until its segment is published', () => {
+      // ffmpeg writes the next program's DISC before that program's first
+      // segment exists.
+      const lines = [...createPlaylist(31), '#EXT-X-DISCONTINUITY'];
+      const unpaced = mutator.trimPlaylist(start, clientAt(25), lines, opts);
+      expect(discTags(unpaced.playlist)).toBe(1);
+      expect(discTags(paced(25, at(40), lines).playlist)).toBe(0);
+
+      const withNextProgram = [
+        ...lines,
+        '#EXTINF:4.004000,',
+        '#EXT-X-PROGRAM-DATE-TIME:2024-10-18T14:02:04.124-0400',
+        '/stream/channels/test-channel/hls/data000031.ts',
+      ];
+      // Still not due: the DISC stays hidden with the segment it introduces.
+      expect(discTags(paced(25, at(28), withNextProgram).playlist)).toBe(0);
+      // Due: the DISC appears in front of it.
+      const published = paced(25, at(40), withNextProgram).playlist;
+      expect(discTags(published)).toBe(1);
+      expect(published).toMatch(
+        /#EXT-X-DISCONTINUITY\n#EXTINF:4\.004000,\n#EXT-X-PROGRAM-DATE-TIME:[^\n]+\n\/stream\/channels\/test-channel\/hls\/data000031\.ts/,
+      );
+    });
+  });
 
   describe('integration with real test file', () => {
     it('should parse and trim the test.m3u8 file', async () => {

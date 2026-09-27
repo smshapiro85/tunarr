@@ -447,6 +447,10 @@ msgstr ""
 msgid "Adds Flex breaks between programs, attempting to avoid groups of consecutive programs that exceed the specified number of minutes."
 msgstr ""
 
+#: src/pages/settings/MichaelSettingsPage.tsx:208
+msgid "Adds one segment to the playlist per segment duration, like broadcast TV, however far ahead the transcode runs. Off, a player that buffers ahead sees its playlist stop updating when the transcode idles between programs — Apple TV treats that as a dead stream and freezes. Upstream has no pacing."
+msgstr ""
+
 #: src/components/settings/ffmpeg/TranscodeConfigAudioSettingsForm.tsx:196
 msgid "Adjust the output volume (not recommended). Values higher than 100 will boost the audio."
 msgstr ""
@@ -748,7 +752,7 @@ msgstr ""
 #~ msgid "Briefly shows \"Season 3 - Episode 8\" and the episode title in the lower-right corner, then fades out. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program. Episodes only — movies and music are skipped."
 #~ msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:216
+#: src/pages/settings/MichaelSettingsPage.tsx:252
 msgid "Briefly shows what is playing in the lower-right corner, then fades out. Episodes show \"Season 3 - Episode 8\" above the episode title; movies show the title and year; music shows the track and artist. Only on the first tune of a session, so it does not reappear when the channel rolls to the next program."
 msgstr ""
 
@@ -2047,7 +2051,7 @@ msgstr ""
 msgid "Guide"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:245
+#: src/pages/settings/MichaelSettingsPage.tsx:281
 msgid "Guide (EPG)"
 msgstr ""
 
@@ -2094,6 +2098,10 @@ msgstr ""
 
 #: src/components/Video.tsx:95
 msgid "HLS not supported in this browser!"
+msgstr ""
+
+#: src/pages/settings/MichaelSettingsPage.tsx:227
+msgid "How far past the clock the paced playlist reaches — the most a player can buffer ahead. Never less than segments before playback × segment duration."
 msgstr ""
 
 #: src/pages/settings/MichaelSettingsPage.tsx:178
@@ -2890,7 +2898,7 @@ msgstr ""
 msgid "Overflow Behavior"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:235
+#: src/pages/settings/MichaelSettingsPage.tsx:271
 msgid "Overlay duration (seconds)"
 msgstr ""
 
@@ -2909,6 +2917,14 @@ msgstr ""
 
 #: src/components/programs/ProgramDetailsDialog.tsx:168
 msgid "Overview"
+msgstr ""
+
+#: src/pages/settings/MichaelSettingsPage.tsx:205
+msgid "Pace the live playlist to the clock"
+msgstr ""
+
+#: src/pages/settings/MichaelSettingsPage.tsx:226
+msgid "Paced playlist lead (seconds)"
 msgstr ""
 
 #: src/components/programming_controls/AddPaddingModal.tsx:50
@@ -3050,7 +3066,7 @@ msgstr ""
 msgid "Program JSON"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:200
+#: src/pages/settings/MichaelSettingsPage.tsx:236
 msgid "Program Overlay"
 msgstr ""
 
@@ -3113,7 +3129,7 @@ msgstr ""
 msgid "Protocol must be HTTP or HTTPS"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:253
+#: src/pages/settings/MichaelSettingsPage.tsx:289
 msgid "Put season, episode and title in the description"
 msgstr ""
 
@@ -3308,7 +3324,7 @@ msgstr ""
 #: src/components/channel_config/ChannelProgrammingConfig.tsx:233
 #: src/components/custom-shows/EditCustomShowForm.tsx:435
 #: src/components/filler/EditFillerListForm.tsx:172
-#: src/pages/settings/MichaelSettingsPage.tsx:274
+#: src/pages/settings/MichaelSettingsPage.tsx:310
 msgid "Reset"
 msgstr ""
 
@@ -3431,7 +3447,7 @@ msgstr ""
 #: src/pages/settings/FeaturesSettingsPage.tsx:170
 #: src/pages/settings/FfmpegSettingsPage.tsx:428
 #: src/pages/settings/HdhrSettingsPage.tsx:152
-#: src/pages/settings/MichaelSettingsPage.tsx:281
+#: src/pages/settings/MichaelSettingsPage.tsx:317
 #: src/pages/settings/ScannerSettingsPage.tsx:82
 #: src/pages/settings/XmlTvSettingsPage.tsx:222
 msgid "Save"
@@ -3628,7 +3644,7 @@ msgstr ""
 msgid "Show Stealth"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:213
+#: src/pages/settings/MichaelSettingsPage.tsx:249
 msgid "Show what's playing when a channel starts"
 msgstr ""
 
@@ -3646,7 +3662,7 @@ msgstr ""
 msgid "Shows"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:256
+#: src/pages/settings/MichaelSettingsPage.tsx:292
 msgid "Shows “Season 3 Episode 6 \"Mystery of Panama\" — description” in the guide, for clients that only display the description field. Applied when the guide is rendered, so it is never written into your Plex data and cannot be applied twice. Episodes only."
 msgstr ""
 
@@ -4160,7 +4176,7 @@ msgstr ""
 msgid "Total Runtime"
 msgstr ""
 
-#: src/pages/settings/MichaelSettingsPage.tsx:236
+#: src/pages/settings/MichaelSettingsPage.tsx:272
 msgid "Total time on screen, including a 0.75s fade-out at the end."
 msgstr ""
 

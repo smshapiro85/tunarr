@@ -23,6 +23,8 @@ reachable only through an environment variable.
 | `episodeOverlayEnabled` | *did not exist* | true | Show season/episode briefly when a channel starts. |
 | `episodeOverlaySeconds` | *did not exist* | 5 | How long it stays up, fade included. |
 | `transcodeReadRate` | 1 (hardcoded) | 2 | Input read rate as a multiple of real time. |
+| `livePlaylistPacing` | *did not exist* | true | Publish the live playlist in step with the clock. See [Live playlist pacing](#live-playlist-pacing). |
+| `livePlaylistLeadSeconds` | *did not exist* | 12 | How far past the clock the paced playlist reaches. |
 | `epgEpisodePrefix` | *did not exist* | true | Put season/episode/title in EPG descriptions. |
 
 Changes apply to the next stream that starts. No restart required.
@@ -175,6 +177,49 @@ This fork routes the value from the session's `hlsOptions` through a new
 The static remains as the default parameter, so any caller that does not pass a
 value behaves exactly as before.
 
+## Live playlist pacing
+
+Upstream builds each client's media playlist as a 20-segment window starting 10
+segments behind the last segment that client requested
+(`BaseHlsSession.minSegmentRequested`, which despite its name holds the most
+recent request per IP). The playlist therefore only changes when the client
+fetches a segment, or when the transcoder writes one while the client is caught
+up to it.
+
+That is harmless at upstream's `-readrate 1`: the transcode runs slightly
+slower than real time, so no client can get ahead of it and the playlist grows
+with every new segment. At a read rate above 1 the transcoder finishes each
+program in a fraction of its runtime and then idles until the next is due, and
+a client that buffers ahead can reach its output. Two things then freeze the
+playlist:
+
+1. The client pauses downloading because its buffer is full. The window is
+   pinned to its last request, so it stops changing even though the transcoder
+   is still running.
+2. The transcoder idles between programs while the client is caught up. Idle
+   gaps of 6 to 9.5 minutes were measured, starting 6 to 18 minutes into a
+   session.
+
+Apple's player gives up on a live playlist that does not change within about
+1.5 segment durations, so Apple TV clients froze 10 to 20 minutes in,
+mid-episode. A 30-minute soak with Apple-TV-like clients found the playlist
+frozen for 74% of the session for a client buffering about 180s ahead (longest
+single freeze 127s), 55% at 90s, and almost never for a client holding 30s.
+
+With `livePlaylistPacing` on, `HlsSession.trimPlaylist` passes a `publishUntil`
+of now plus the lead, and `HlsPlaylistMutator` lists only segments that start by
+then. The window's end advances with the clock, one segment per segment
+duration; its start still reaches back to cover the slowest client. The
+transcoder's lead stays on the server as an invisible buffer. A discontinuity
+tag is emitted only together with the segment it introduces, since a
+discontinuity at the end of ffmpeg's playlist usually belongs to segments not
+yet published.
+
+The effective lead is `max(livePlaylistLeadSeconds, initialSegmentCount ×
+hlsSegmentSeconds)`, so the segments the startup gate waited for are always
+listed when the client arrives. It is fixed when a session is created. Turning
+pacing off restores the upstream window exactly.
+
 ## Files changed
 
 | File | Change |
@@ -185,7 +230,8 @@ value behaves exactly as before.
 | `server/src/api/systemApi.ts` | field-by-field merge in the PUT handler |
 | `server/src/stream/SessionManager.ts` | concurrency limit, settings-driven session options |
 | `server/src/stream/Session.ts` | `lastActivity()` accessor for eviction ordering |
-| `server/src/stream/hls/HlsSession.ts` | `hlsTime` from settings |
+| `server/src/stream/hls/HlsSession.ts` | `hlsTime` from settings; `publishUntil` when pacing |
+| `server/src/stream/hls/HlsPlaylistMutator.ts` | paced window and discontinuity emission |
 | `server/src/stream/hls/BaseHlsSession.ts` | readiness poll decoupled from timeout budget |
 | `server/src/ffmpeg/builder/state/FfmpegState.ts` | `hlsSegmentSeconds` getter |
 | `server/src/ffmpeg/builder/options/HlsOutputFormat.ts` | accepts segment duration |
@@ -218,7 +264,7 @@ order:
 
 ```bash
 # 1. OpenAPI spec — MUST pass -d or it writes to the live database directory
-cd server && pnpm generate-openapi
+cd server && pnpm generate-openapi -d "$(mktemp -d)"
 
 # 2. Typed API client for the web app
 cd ../web && pnpm generate-client

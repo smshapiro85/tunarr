@@ -6,7 +6,9 @@ import type { EventService } from '@/services/EventService.js';
 import type { OnDemandChannelService } from '@/services/OnDemandChannelService.js';
 import type { Logger } from '@/util/logging/LoggerFactory.js';
 import type { DeepRequired } from 'ts-essentials';
+import type { StreamingTuningSettings } from '@tunarr/types';
 import { DefaultStreamingTuningSettings } from '@tunarr/types';
+import { omit } from 'lodash-es';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { HlsSessionOptions } from './hls/HlsSession.ts';
 
@@ -108,6 +110,7 @@ function makeSessionManager(
     channel: ChannelOrmWithTranscodeConfig,
     options: HlsSessionOptions,
   ) => StubHlsSession,
+  streaming: Partial<StreamingTuningSettings> = DefaultStreamingTuningSettings,
 ) {
   const channelDB: Partial<IChannelDB> = {
     getChannelOrm: vi.fn().mockResolvedValue(makeChannel()),
@@ -128,9 +131,7 @@ function makeSessionManager(
     }),
     // SessionManager reads the streaming tuning knobs (concurrency limit,
     // staleness, segment counts) when creating a session.
-    systemSettings: vi.fn().mockReturnValue({
-      streaming: DefaultStreamingTuningSettings,
-    }),
+    systemSettings: vi.fn().mockReturnValue({ streaming }),
   };
 
   // Construct SessionManager directly, bypassing Inversify
@@ -405,6 +406,55 @@ describe('SessionManager', () => {
       // Session should still be in the manager — cleanup was aborted
       // because #connections is non-empty when the timer fires
       expect(manager.getHlsSession(channelUuid)).toBe(session);
+    });
+  });
+
+  describe('live playlist pacing', () => {
+    async function leadFor(streaming: Partial<StreamingTuningSettings>) {
+      const seen: HlsSessionOptions[] = [];
+      const manager = makeSessionManager((channel, options) => {
+        seen.push(options);
+        return new StubHlsSession(channel, options);
+      }, streaming);
+      await manager.getOrCreateHlsSession(channelUuid, 'token', connection, {
+        streamMode: 'hls',
+      });
+      return seen[0]?.livePlaylistLeadMs;
+    }
+
+    it('paces with the configured lead', async () => {
+      expect(await leadFor(DefaultStreamingTuningSettings)).toBe(12_000);
+    });
+
+    it('never paces tighter than the startup gate', async () => {
+      // 5 segments of 4s must all be publishable when the client arrives.
+      const lead = await leadFor({
+        ...DefaultStreamingTuningSettings,
+        initialSegmentCount: 5,
+        hlsSegmentSeconds: 4,
+        livePlaylistLeadSeconds: 12,
+      });
+      expect(lead).toBe(20_000);
+    });
+
+    it('leaves the playlist unpaced when pacing is off', async () => {
+      const lead = await leadFor({
+        ...DefaultStreamingTuningSettings,
+        livePlaylistPacing: false,
+      });
+      expect(lead).toBeUndefined();
+    });
+
+    it('paces a settings file written before the pacing keys existed', async () => {
+      // Stored settings are not schema-parsed, so the new keys are absent.
+      const lead = await leadFor(
+        omit(
+          { ...DefaultStreamingTuningSettings, hlsSegmentSeconds: 4 },
+          'livePlaylistPacing',
+          'livePlaylistLeadSeconds',
+        ),
+      );
+      expect(lead).toBe(12_000);
     });
   });
 });
